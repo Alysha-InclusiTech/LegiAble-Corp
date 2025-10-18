@@ -11,7 +11,6 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info, Eye } from "lucide-react";
-import dyslexiaSimulation from "@/assets/dyslexia-simulation.jpg";
 
 interface ChecklistItem {
   id: string;
@@ -164,11 +163,45 @@ const EmployerPortal = () => {
                 </div>
               ) : (
                 <div className="relative">
-                  <img 
-                    src={dyslexiaSimulation} 
-                    alt="Visual simulation of how text appears to someone with dyslexia, showing scrambled and misaligned letters"
-                    className="w-full rounded-lg border border-border"
-                  />
+                  <p 
+                    className="text-lg"
+                    style={{
+                      filter: 'blur(0.5px)',
+                      lineHeight: '2.5',
+                    }}
+                  >
+                    {sampleText.split('').map((char, i) => {
+                      const shouldShift = Math.random() > 0.7;
+                      const shouldReverse = Math.random() > 0.85;
+                      const shouldFade = Math.random() > 0.8;
+                      
+                      let displayChar = char;
+                      if (shouldReverse && char !== ' ') {
+                        const reversals: { [key: string]: string } = {
+                          'b': 'd', 'd': 'b', 'p': 'q', 'q': 'p',
+                          'n': 'u', 'u': 'n', 'a': 'e', 'e': 'a',
+                          'w': 'm', 'm': 'w', 'h': 'n', 'g': 'q'
+                        };
+                        displayChar = reversals[char.toLowerCase()] || char;
+                      }
+                      
+                      return (
+                        <span
+                          key={i}
+                          style={{
+                            display: 'inline-block',
+                            transform: shouldShift 
+                              ? `translate(${Math.random() * 8 - 4}px, ${Math.random() * 12 - 6}px) rotate(${Math.random() * 10 - 5}deg)` 
+                              : 'none',
+                            opacity: shouldFade ? 0.4 : (Math.random() > 0.9 ? 0.6 : 1),
+                            marginLeft: char === ' ' ? '0.5em' : `${Math.random() * 0.3}em`,
+                          }}
+                        >
+                          {displayChar}
+                        </span>
+                      );
+                    })}
+                  </p>
                   <div className="mt-6 p-4 bg-secondary/10 border border-secondary rounded-lg">
                     <p className="text-sm">
                       <strong>Note:</strong> This is a simplified simulation. The actual experience varies 
