@@ -15,7 +15,7 @@ export default {
     extend: {
       fontFamily: {
         sans: ['Inter', 'sans-serif'],
-        dyslexic: ['OpenDyslexic', 'Comic Sans MS', 'sans-serif'],
+        dyslexic: ['OpenDyslexic', 'sans-serif'],
       },
       colors: {
         border: "hsl(var(--border))",
