@@ -160,10 +160,25 @@ const EmployeeReader = () => {
               onMouseMove={handleMouseMove}
             >
               {isRulerEnabled && extractedText && (
-                <div
-                  className="absolute left-0 right-0 h-12 bg-focus-highlight/20 pointer-events-none transition-all duration-100 border-y-2 border-focus-highlight"
-                  style={{ top: `${rulerPosition - 24}px` }}
-                />
+                <>
+                  {/* Blur overlay above ruler */}
+                  <div
+                    className="absolute left-0 right-0 top-0 bg-reader-bg/60 backdrop-blur-sm pointer-events-none transition-all duration-100 z-20"
+                    style={{ height: `${rulerPosition - 24}px` }}
+                  />
+                  
+                  {/* Reading ruler highlight */}
+                  <div
+                    className="absolute left-0 right-0 h-12 bg-focus-highlight/20 pointer-events-none transition-all duration-100 border-y-2 border-focus-highlight z-10"
+                    style={{ top: `${rulerPosition - 24}px` }}
+                  />
+                  
+                  {/* Blur overlay below ruler */}
+                  <div
+                    className="absolute left-0 right-0 bottom-0 bg-reader-bg/60 backdrop-blur-sm pointer-events-none transition-all duration-100 z-20"
+                    style={{ top: `${rulerPosition + 24}px` }}
+                  />
+                </>
               )}
               
               {extractedText ? (
