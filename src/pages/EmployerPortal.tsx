@@ -166,24 +166,33 @@ const EmployerPortal = () => {
                   <p 
                     className="text-lg"
                     style={{
-                      filter: 'blur(0.5px)',
-                      lineHeight: '2.5',
+                      filter: 'blur(0.8px)',
+                      lineHeight: '3',
                     }}
                   >
                     {sampleText.split('').map((char, i) => {
-                      const shouldShift = Math.random() > 0.7;
-                      const shouldReverse = Math.random() > 0.85;
-                      const shouldFade = Math.random() > 0.8;
+                      const shouldShift = Math.random() > 0.5;
+                      const shouldReverse = Math.random() > 0.75;
+                      const shouldFade = Math.random() > 0.6;
+                      const shouldRotate = Math.random() > 0.6;
                       
                       let displayChar = char;
                       if (shouldReverse && char !== ' ') {
                         const reversals: { [key: string]: string } = {
                           'b': 'd', 'd': 'b', 'p': 'q', 'q': 'p',
                           'n': 'u', 'u': 'n', 'a': 'e', 'e': 'a',
-                          'w': 'm', 'm': 'w', 'h': 'n', 'g': 'q'
+                          'w': 'm', 'm': 'w', 'h': 'n', 'g': 'q',
+                          'i': 'l', 'l': 'i', 'o': 'c', 'c': 'o',
+                          's': 'z', 'z': 's', 'f': 't', 't': 'f'
                         };
                         displayChar = reversals[char.toLowerCase()] || char;
                       }
+                      
+                      const xShift = Math.random() * 16 - 8;
+                      const yShift = Math.random() * 20 - 10;
+                      const rotation = shouldRotate ? Math.random() * 30 - 15 : 0;
+                      const opacity = shouldFade ? Math.random() * 0.5 + 0.3 : (Math.random() > 0.85 ? 0.5 : 1);
+                      const spacing = char === ' ' ? `${Math.random() * 1.5}em` : `${Math.random() * 0.5}em`;
                       
                       return (
                         <span
@@ -191,10 +200,11 @@ const EmployerPortal = () => {
                           style={{
                             display: 'inline-block',
                             transform: shouldShift 
-                              ? `translate(${Math.random() * 8 - 4}px, ${Math.random() * 12 - 6}px) rotate(${Math.random() * 10 - 5}deg)` 
-                              : 'none',
-                            opacity: shouldFade ? 0.4 : (Math.random() > 0.9 ? 0.6 : 1),
-                            marginLeft: char === ' ' ? '0.5em' : `${Math.random() * 0.3}em`,
+                              ? `translate(${xShift}px, ${yShift}px) rotate(${rotation}deg)` 
+                              : `rotate(${rotation}deg)`,
+                            opacity: opacity,
+                            marginLeft: spacing,
+                            filter: Math.random() > 0.85 ? 'blur(1px)' : 'none',
                           }}
                         >
                           {displayChar}
