@@ -4,7 +4,9 @@ import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Eye } from "lucide-react";
+import { Eye, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useToast } from "@/hooks/use-toast";
 
 interface ChecklistQuestion {
   id: string;
@@ -13,6 +15,10 @@ interface ChecklistQuestion {
 
 const EmployerPortal = () => {
   const [showEmpathyView, setShowEmpathyView] = useState(false);
+  const [isSubmitted, setIsSubmitted] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [aiSuggestions, setAiSuggestions] = useState<Array<{ action: string; impact: string }>>([]);
+  const { toast } = useToast();
   
   const questions: ChecklistQuestion[] = [
     { id: "1", question: "Have I asked my employees what helps them work best in the last 6 months?" },
@@ -40,6 +46,41 @@ const EmployerPortal = () => {
       "not-yet": 0,
     };
     setAnswers(prev => ({ ...prev, [questionId]: scoreMap[value] }));
+    setIsSubmitted(false);
+  };
+
+  const handleSubmit = async () => {
+    setIsSubmitted(true);
+    setIsLoading(true);
+    setAiSuggestions([]);
+
+    if (percentageScore < 50) {
+      try {
+        const { data, error } = await supabase.functions.invoke('accessibility-suggestions', {
+          body: { questions, answers }
+        });
+
+        if (error) {
+          console.error("Error getting suggestions:", error);
+          toast({
+            title: "Error",
+            description: "Failed to generate personalized suggestions. Please try again.",
+            variant: "destructive",
+          });
+        } else if (data?.suggestions) {
+          setAiSuggestions(data.suggestions);
+        }
+      } catch (error) {
+        console.error("Error:", error);
+        toast({
+          title: "Error",
+          description: "Failed to generate personalized suggestions. Please try again.",
+          variant: "destructive",
+        });
+      }
+    }
+    
+    setIsLoading(false);
   };
 
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
@@ -148,19 +189,8 @@ const EmployerPortal = () => {
 
           {/* Accessibility Checklist */}
           <Card className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Accessibility Checklist</h2>
-            
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">
-                  Your Accessibility Score
-                </span>
-                <span className="text-2xl font-bold text-primary">
-                  {percentageScore}%
-                </span>
-              </div>
-              <Progress value={percentageScore} className="h-3" />
-            </div>
+            <h2 className="text-2xl font-semibold mb-2">Accessibility Checklist</h2>
+            <p className="text-sm text-muted-foreground mb-6">Check this list monthly to track your progress</p>
 
             <div className="space-y-6">
               {questions.map((question) => (
@@ -210,12 +240,71 @@ const EmployerPortal = () => {
               ))}
             </div>
 
-            {percentageScore >= 80 && (
-              <div className="mt-6 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                <p className="text-sm text-green-800 dark:text-green-200">
-                  🎉 Great job! You're creating an inclusive workplace for employees with dyslexia!
-                </p>
-              </div>
+            <div className="mt-6 flex justify-center">
+              <Button 
+                onClick={handleSubmit} 
+                disabled={isLoading}
+                size="lg"
+                className="w-full md:w-auto"
+              >
+                {isLoading ? (
+                  <>
+                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+                    Analyzing...
+                  </>
+                ) : (
+                  "Submit & View Score"
+                )}
+              </Button>
+            </div>
+
+            {isSubmitted && !isLoading && (
+              <>
+                <div className="mt-6">
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="text-sm text-muted-foreground">
+                      Your Accessibility Score
+                    </span>
+                    <span className="text-2xl font-bold text-primary">
+                      {percentageScore}%
+                    </span>
+                  </div>
+                  <Progress value={percentageScore} className="h-3" />
+                </div>
+
+                {percentageScore >= 80 && (
+                  <div className="mt-6 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                    <p className="text-sm text-green-800 dark:text-green-200">
+                      🎉 Great job! You're creating an inclusive workplace for employees with dyslexia!
+                    </p>
+                  </div>
+                )}
+
+                {percentageScore < 50 && aiSuggestions.length > 0 && (
+                  <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                    <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-3">
+                      Top 3 Things You Can Do Today:
+                    </h3>
+                    <div className="space-y-3">
+                      {aiSuggestions.map((suggestion, index) => (
+                        <div key={index} className="flex gap-3">
+                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 flex items-center justify-center text-sm font-bold">
+                            {index + 1}
+                          </span>
+                          <div>
+                            <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                              {suggestion.action}
+                            </p>
+                            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                              {suggestion.impact}
+                            </p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </Card>
         </div>
