@@ -91,6 +91,10 @@ const Index = () => {
                   <Eye className="h-4 w-4 text-accent" />
                   Accessibility checklist
                 </li>
+                <li className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-accent" />
+                  Best practices guide
+                </li>
               </ul>
               <Button variant="secondary" className="w-full" size="lg">
                 Explore Toolkit
