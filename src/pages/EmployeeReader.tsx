@@ -94,7 +94,7 @@ const EmployeeReader = () => {
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-foreground mb-2">LegiAble Reader</h1>
-          <p className="text-muted-foreground">Upload a document or paste text to read with enhanced accessibility</p>
+          <p className="text-muted-foreground">Upload an image or paste text to read with enhanced accessibility</p>
         </header>
 
         <div className="grid md:grid-cols-2 gap-6">
