@@ -106,7 +106,7 @@ const EmployeeReader = () => {
               <Label htmlFor="file-upload" className="cursor-pointer">
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
                   <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload an image or PDF document</p>
+                  <p className="text-sm text-muted-foreground">Click to upload an image</p>
                   <input
                     id="file-upload"
                     type="file"
