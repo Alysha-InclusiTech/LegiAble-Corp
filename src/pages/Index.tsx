@@ -27,7 +27,7 @@ const Index = () => {
         {/* Hero Content */}
         <div className="text-center mb-16">
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Accessible Reading for Everyone
+            Making Inclusion Practical and Human
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
             Empowering employees with dyslexia and educating employers about inclusive workplace design
