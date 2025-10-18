@@ -87,8 +87,8 @@ const EmployerPortal = () => {
     <div className="min-h-screen bg-background p-4 md:p-8">
       <div className="max-w-6xl mx-auto">
         <header className="mb-8">
-          <h1 className="text-4xl font-bold text-foreground mb-2">Employer Portal</h1>
-          <p className="text-muted-foreground">Create an inclusive workplace for employees with dyslexia</p>
+          <h1 className="text-4xl font-bold text-foreground mb-2">Employer Toolkit</h1>
+          <p className="text-muted-foreground">Understand how accessibility feels, assess your materials, and start improving inclusion right now.</p>
         </header>
 
         <div className="grid md:grid-cols-2 gap-6">
