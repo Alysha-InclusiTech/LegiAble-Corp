@@ -6,6 +6,7 @@ import { Switch } from "@/components/ui/switch";
 import { Label } from "@/components/ui/label";
 import { Upload, Eye, EyeOff } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
 const EmployeeReader = () => {
   const [text, setText] = useState("");
@@ -19,22 +20,63 @@ const EmployeeReader = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
+    if (!file.type.startsWith('image/')) {
+      toast({
+        title: "Invalid file type",
+        description: "Please upload an image file (PNG, JPG, etc.)",
+        variant: "destructive",
+      });
+      return;
+    }
+
     setIsProcessing(true);
     toast({
       title: "Processing image...",
-      description: "Extracting text from your document",
+      description: "Extracting text with AI-powered OCR",
     });
 
-    // For MVP, we'll use a simple text extraction
-    // In production, this would call the OCR edge function
-    setTimeout(() => {
-      setExtractedText("Sample extracted text from your document. This demonstrates the OpenDyslexic font rendering and reading ruler overlay features.");
+    try {
+      // Convert image to base64
+      const reader = new FileReader();
+      reader.onloadend = async () => {
+        const base64Image = reader.result as string;
+
+        // Call OCR edge function
+        const { data, error } = await supabase.functions.invoke('ocr-extract', {
+          body: { image: base64Image }
+        });
+
+        if (error) {
+          throw error;
+        }
+
+        if (data?.text) {
+          setExtractedText(data.text);
+          toast({
+            title: "Success!",
+            description: "Text extracted successfully",
+          });
+        } else {
+          throw new Error('No text extracted from image');
+        }
+
+        setIsProcessing(false);
+      };
+
+      reader.onerror = () => {
+        throw new Error('Failed to read file');
+      };
+
+      reader.readAsDataURL(file);
+    } catch (error) {
+      console.error('OCR error:', error);
       setIsProcessing(false);
       toast({
-        title: "Success!",
-        description: "Text extracted successfully",
+        title: "Extraction failed",
+        description: error instanceof Error ? error.message : "Failed to extract text from image",
+        variant: "destructive",
       });
-    }, 1500);
+    }
   };
 
   const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
