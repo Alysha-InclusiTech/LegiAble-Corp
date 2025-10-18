@@ -122,7 +122,6 @@ const EmployerPortal = () => {
                   <p 
                     className="text-base"
                     style={{
-                      filter: 'blur(0.8px)',
                       lineHeight: '2.5',
                     }}
                   >
@@ -160,7 +159,6 @@ const EmployerPortal = () => {
                               : `rotate(${rotation}deg)`,
                             opacity: opacity,
                             marginLeft: spacing,
-                            filter: Math.random() > 0.85 ? 'blur(1px)' : 'none',
                           }}
                         >
                           {displayChar}
