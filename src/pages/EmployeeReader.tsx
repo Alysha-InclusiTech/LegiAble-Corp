@@ -156,7 +156,7 @@ const EmployeeReader = () => {
             </div>
 
             <div 
-              className="relative bg-reader-bg rounded-lg p-6 min-h-[400px] overflow-hidden"
+              className="relative bg-reader-bg rounded-lg p-6 min-h-[400px] overflow-hidden font-dyslexic"
               onMouseMove={handleMouseMove}
             >
               {isRulerEnabled && extractedText && (
@@ -167,7 +167,7 @@ const EmployeeReader = () => {
               )}
               
               {extractedText ? (
-                <p className="font-dyslexic text-xl leading-relaxed relative z-10">
+                <p className="text-xl leading-relaxed relative z-10 whitespace-pre-wrap">
                   {extractedText}
                 </p>
               ) : (
