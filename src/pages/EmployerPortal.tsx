@@ -83,50 +83,6 @@ const EmployerPortal = () => {
         </header>
 
         <div className="grid md:grid-cols-2 gap-6">
-          {/* Accessibility Checklist */}
-          <Card className="p-6">
-            <h2 className="text-2xl font-semibold mb-4">Accessibility Checklist</h2>
-            
-            <div className="mb-6">
-              <div className="flex items-center justify-between mb-2">
-                <span className="text-sm text-muted-foreground">Progress</span>
-                <span className="text-sm font-semibold text-primary">{completionPercentage}%</span>
-              </div>
-              <Progress value={completionPercentage} className="h-2" />
-            </div>
-
-            <div className="space-y-4">
-              {checklist.map((item) => (
-                <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
-                  <Checkbox
-                    id={item.id}
-                    checked={item.checked}
-                    onCheckedChange={() => toggleItem(item.id)}
-                    className="mt-1"
-                  />
-                  <div className="flex-1">
-                    <div className="flex items-center gap-2">
-                      <Label htmlFor={item.id} className="cursor-pointer font-medium">
-                        {item.title}
-                      </Label>
-                      <TooltipProvider>
-                        <Tooltip>
-                          <TooltipTrigger>
-                            <Info className="h-4 w-4 text-muted-foreground" />
-                          </TooltipTrigger>
-                          <TooltipContent>
-                            <p className="max-w-xs">{item.description}</p>
-                          </TooltipContent>
-                        </Tooltip>
-                      </TooltipProvider>
-                    </div>
-                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
-          </Card>
-
           {/* Empathy Preview */}
           <Card className="p-6">
             <div className="flex items-center justify-between mb-4">
@@ -220,6 +176,50 @@ const EmployerPortal = () => {
                   </div>
                 </div>
               )}
+            </div>
+          </Card>
+
+          {/* Accessibility Checklist */}
+          <Card className="p-6">
+            <h2 className="text-2xl font-semibold mb-4">Accessibility Checklist</h2>
+            
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">Progress</span>
+                <span className="text-sm font-semibold text-primary">{completionPercentage}%</span>
+              </div>
+              <Progress value={completionPercentage} className="h-2" />
+            </div>
+
+            <div className="space-y-4">
+              {checklist.map((item) => (
+                <div key={item.id} className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted/50 transition-colors">
+                  <Checkbox
+                    id={item.id}
+                    checked={item.checked}
+                    onCheckedChange={() => toggleItem(item.id)}
+                    className="mt-1"
+                  />
+                  <div className="flex-1">
+                    <div className="flex items-center gap-2">
+                      <Label htmlFor={item.id} className="cursor-pointer font-medium">
+                        {item.title}
+                      </Label>
+                      <TooltipProvider>
+                        <Tooltip>
+                          <TooltipTrigger>
+                            <Info className="h-4 w-4 text-muted-foreground" />
+                          </TooltipTrigger>
+                          <TooltipContent>
+                            <p className="max-w-xs">{item.description}</p>
+                          </TooltipContent>
+                        </Tooltip>
+                      </TooltipProvider>
+                    </div>
+                    <p className="text-sm text-muted-foreground mt-1">{item.description}</p>
+                  </div>
+                </div>
+              ))}
             </div>
           </Card>
         </div>
