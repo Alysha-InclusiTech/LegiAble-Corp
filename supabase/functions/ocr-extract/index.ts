@@ -11,7 +11,7 @@ serve(async (req) => {
   }
 
   try {
-    const { image } = await req.json();
+    const { image, mimeType } = await req.json();
     
     if (!image) {
       throw new Error('No image data provided');
@@ -22,7 +22,29 @@ serve(async (req) => {
       throw new Error('LOVABLE_API_KEY is not configured');
     }
 
-    console.log('Processing OCR request with Gemini 2.5 Flash');
+    console.log('Processing OCR request with Gemini 2.5 Flash', { mimeType });
+
+    // For PDFs, we need to use a different approach - extract base64 data and use inline_data
+    const isPDF = mimeType === 'application/pdf' || image.startsWith('data:application/pdf');
+    
+    let imageContent;
+    if (isPDF) {
+      // Extract base64 data from data URL
+      const base64Data = image.split(',')[1] || image;
+      imageContent = {
+        type: 'image_url',
+        image_url: {
+          url: `data:application/pdf;base64,${base64Data}`
+        }
+      };
+    } else {
+      imageContent = {
+        type: 'image_url',
+        image_url: {
+          url: image
+        }
+      };
+    }
 
     const response = await fetch('https://ai.gateway.lovable.dev/v1/chat/completions', {
       method: 'POST',
@@ -38,14 +60,11 @@ serve(async (req) => {
             content: [
               {
                 type: 'text',
-                text: 'Extract all text from this image. Return only the extracted text without any additional commentary or formatting. Preserve line breaks and paragraph structure as they appear in the image.'
+                text: isPDF 
+                  ? 'Extract all text from this PDF document. Return only the extracted text without any additional commentary or formatting. Preserve line breaks and paragraph structure as they appear in the document.'
+                  : 'Extract all text from this image. Return only the extracted text without any additional commentary or formatting. Preserve line breaks and paragraph structure as they appear in the image.'
               },
-              {
-                type: 'image_url',
-                image_url: {
-                  url: image
-                }
-              }
+              imageContent
             ]
           }
         ],

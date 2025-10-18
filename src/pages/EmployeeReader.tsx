@@ -36,14 +36,17 @@ const EmployeeReader = () => {
     });
 
     try {
-      // Convert image to base64
+      // Convert file to base64
       const reader = new FileReader();
       reader.onloadend = async () => {
-        const base64Image = reader.result as string;
+        const base64Data = reader.result as string;
 
-        // Call OCR edge function
+        // Call OCR edge function with file type info
         const { data, error } = await supabase.functions.invoke('ocr-extract', {
-          body: { image: base64Image }
+          body: { 
+            image: base64Data,
+            mimeType: file.type
+          }
         });
 
         if (error) {
