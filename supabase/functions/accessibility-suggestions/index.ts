@@ -27,9 +27,23 @@ serve(async (req) => {
       .filter((q: any) => answers[q.id] === 3)
       .map((q: any) => q.question);
 
-    const systemPrompt = `You are an accessibility consultant helping employers create inclusive workplaces for employees with dyslexia. Based on their checklist responses, provide 3 specific, actionable things they can do TODAY to improve. Keep each suggestion under 25 words. Focus on practical, immediate actions.`;
+    const systemPrompt = `You are an accessibility consultant helping employers create inclusive workplaces for employees with dyslexia. 
 
-    const userPrompt = `The employer is NOT doing these things yet: ${notImplemented.join(", ")}. They are working on: ${workingOn.join(", ")}. Give me the top 3 most impactful actions they can take today.`;
+Based on their checklist responses, provide 3 SPECIFIC, TANGIBLE actions they can do RIGHT NOW - not "start a program" or "consider implementing", but concrete steps they can take in the next hour.
+
+Examples of GOOD suggestions:
+- "Send an email to your team: 'From now on, I'll share meeting agendas 24 hours in advance. Reply with any topics you'd like added.'"
+- "Open your last company document. Add bullet points, break paragraphs into 2-3 sentences max, and add white space between sections."
+- "Book a 15-minute 1-on-1 with one employee this week. Ask: 'What's one thing I could change about how we communicate that would help you work better?'"
+
+Examples of BAD suggestions (too vague):
+- "Implement a feedback system"
+- "Consider offering flexible work options"
+- "Train managers on accessibility"
+
+Each action must include the EXACT words to say, specific tool to use, or precise step to take. Keep under 30 words.`;
+
+    const userPrompt = `The employer is NOT doing these things yet: ${notImplemented.join(", ")}. They are working on: ${workingOn.join(", ")}. Give me the top 3 most impactful actions they can take RIGHT NOW with exact steps.`;
 
     const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
       method: "POST",
