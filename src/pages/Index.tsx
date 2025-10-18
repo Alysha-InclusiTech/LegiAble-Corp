@@ -85,15 +85,11 @@ const Index = () => {
               <ul className="text-sm text-muted-foreground space-y-2 mb-6 text-left">
                 <li className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-accent" />
-                  Accessibility checklist
-                </li>
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
                   Empathy preview mode
                 </li>
                 <li className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-accent" />
-                  Best practices guide
+                  Accessibility checklist
                 </li>
               </ul>
               <Button variant="secondary" className="w-full" size="lg">
