@@ -9,15 +9,15 @@ const Index = () => {
   return (
     <div className="min-h-screen bg-background">
       {/* Hero Section */}
-      <header className="border-b border-border bg-card">
-        <div className="max-w-6xl mx-auto px-4 py-6">
-          <div className="flex items-center gap-3">
-            <div className="h-10 w-10 bg-primary rounded-lg flex items-center justify-center">
-              <Glasses className="h-6 w-6 text-primary-foreground" />
+      <header className="border-b border-border/40 bg-background">
+        <div className="max-w-6xl mx-auto px-4 py-5">
+          <div className="flex items-center gap-4">
+            <div className="h-12 w-12 bg-gradient-to-br from-primary to-primary/80 rounded-md flex items-center justify-center shadow-sm">
+              <Glasses className="h-7 w-7 text-primary-foreground" />
             </div>
             <div>
-              <h1 className="text-2xl font-bold text-foreground">LegiAble</h1>
-              <p className="text-xs text-muted-foreground">by InclusiTech</p>
+              <h1 className="text-2xl font-semibold tracking-tight text-foreground">LegiAble</h1>
+              <p className="text-xs text-muted-foreground font-medium tracking-wide">BY INCLUSITECH</p>
             </div>
           </div>
         </div>
