@@ -11,6 +11,7 @@ import {
   TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { Info, Eye } from "lucide-react";
+import dyslexiaSimulation from "@/assets/dyslexia-simulation.jpg";
 
 interface ChecklistItem {
   id: string;
@@ -163,41 +164,11 @@ const EmployerPortal = () => {
                 </div>
               ) : (
                 <div className="relative">
-                  <p 
-                    className="text-lg leading-relaxed"
-                    style={{
-                      filter: 'blur(0.3px)',
-                      letterSpacing: '0.05em',
-                      lineHeight: '1.8',
-                    }}
-                  >
-                    {sampleText.split('').map((char, i) => {
-                      const shouldShift = Math.random() > 0.85;
-                      const shouldReverse = Math.random() > 0.9;
-                      
-                      let displayChar = char;
-                      if (shouldReverse) {
-                        const reversals: { [key: string]: string } = {
-                          'b': 'd', 'd': 'b', 'p': 'q', 'q': 'p',
-                          'n': 'u', 'u': 'n', 'a': 'e', 'e': 'a'
-                        };
-                        displayChar = reversals[char] || char;
-                      }
-                      
-                      return (
-                        <span
-                          key={i}
-                          style={{
-                            display: 'inline-block',
-                            transform: shouldShift ? `translateY(${Math.random() * 4 - 2}px)` : 'none',
-                            opacity: Math.random() > 0.95 ? 0.5 : 1,
-                          }}
-                        >
-                          {displayChar}
-                        </span>
-                      );
-                    })}
-                  </p>
+                  <img 
+                    src={dyslexiaSimulation} 
+                    alt="Visual simulation of how text appears to someone with dyslexia, showing scrambled and misaligned letters"
+                    className="w-full rounded-lg border border-border"
+                  />
                   <div className="mt-6 p-4 bg-secondary/10 border border-secondary rounded-lg">
                     <p className="text-sm">
                       <strong>Note:</strong> This is a simplified simulation. The actual experience varies 
