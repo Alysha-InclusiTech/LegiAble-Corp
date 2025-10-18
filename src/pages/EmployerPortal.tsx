@@ -17,13 +17,13 @@ const EmployerPortal = () => {
   const questions: ChecklistQuestion[] = [
     { id: "1", question: "Have I asked my employees what helps them work best in the last 6 months?" },
     { id: "2", question: "Is my language clear, simple, and free of jargon or acronyms when I talk and write?" },
-    { id: "3", question: "Am I using an easy-to-read font like OpenDyslexic, Arial, or Verdana (12–14 pt)?" },
-    { id: "4", question: "Does my layout use good spacing, bullet points, and high contrast (no ALL CAPS or italics)?" },
-    { id: "5", question: "Have I provided digital or editable versions of documents and captions or transcripts for videos?" },
+    { id: "3", question: "Do I offer font and display options so employees can choose what works best for them?" },
+    { id: "4", question: "Do I use clear formatting like bullet points, short paragraphs, and plenty of white space?" },
+    { id: "5", question: "Are my documents shared in formats employees can adjust (like Word, Google Docs, or with live captions)?" },
     { id: "6", question: "Do I share agendas and onboarding materials early so everyone can prepare?" },
     { id: "7", question: "Am I offering flexible options like quiet zones or flexible hours for focus?" },
-    { id: "8", question: "Have my managers had basic training on accommodations and inclusive communication?" },
-    { id: "9", question: "Have I tested my materials through a dyslexic or accessibility preview (like LegiAble)?" },
+    { id: "8", question: "Do my team leaders know how to have supportive conversations about work adjustments?" },
+    { id: "9", question: "Have I asked for feedback on how easy our materials are to read and understand?" },
     { id: "10", question: "Do we set and review small accessibility goals regularly to keep improving?" },
   ];
 
