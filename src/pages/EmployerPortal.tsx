@@ -170,8 +170,7 @@ const EmployerPortal = () => {
                   </p>
                   <div className="mt-6 p-4 bg-secondary/10 border border-secondary rounded-lg">
                     <p className="text-sm">
-                      <strong>Note:</strong> This is a simplified simulation. The actual experience varies 
-                      greatly between individuals and can include additional challenges beyond visual distortion.
+                      <strong>Note:</strong> This is a simulation. The actual experience varies greatly between individuals and can include additional challenges beyond visual distortion.
                     </p>
                   </div>
                 </div>
