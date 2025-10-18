@@ -182,7 +182,7 @@ const EmployeeReader = () => {
               )}
               
               {extractedText ? (
-                <p className="text-xl leading-relaxed relative z-10 whitespace-pre-wrap">
+                <p className="text-xl leading-relaxed font-normal relative z-10 whitespace-pre-wrap">
                   {extractedText}
                 </p>
               ) : (
