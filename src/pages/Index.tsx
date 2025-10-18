@@ -1,7 +1,8 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { BookOpen, Briefcase, Eye, Glasses } from "lucide-react";
+import { BookOpen, Briefcase, Eye } from "lucide-react";
+import legiableLogo from "@/assets/legiable-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -12,8 +13,8 @@ const Index = () => {
       <header className="border-b border-border/40 bg-background">
         <div className="max-w-6xl mx-auto px-4 py-5">
           <div className="flex items-center gap-4">
-            <div className="h-12 w-12 bg-gradient-to-br from-primary to-primary/80 rounded-md flex items-center justify-center shadow-sm">
-              <Glasses className="h-7 w-7 text-primary-foreground" />
+            <div className="h-12 w-12 rounded-md flex items-center justify-center">
+              <img src={legiableLogo} alt="LegiAble Logo" className="h-12 w-12" />
             </div>
             <div>
               <h1 className="text-2xl font-semibold tracking-tight text-foreground">LegiAble</h1>
