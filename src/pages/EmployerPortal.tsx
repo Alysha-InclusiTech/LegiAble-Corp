@@ -118,12 +118,12 @@ const EmployerPortal = () => {
                   </div>
                 </div>
               ) : (
-                <div className="relative">
+                <div className="relative max-w-md">
                   <p 
-                    className="text-lg"
+                    className="text-base"
                     style={{
                       filter: 'blur(0.8px)',
-                      lineHeight: '3',
+                      lineHeight: '2.5',
                     }}
                   >
                     {sampleText.split('').map((char, i) => {
@@ -170,7 +170,7 @@ const EmployerPortal = () => {
                   </p>
                   <div className="mt-6 p-4 bg-secondary/10 border border-secondary rounded-lg">
                     <p className="text-sm">
-                      <strong>Note:</strong> This is a simulation. The actual experience varies greatly between individuals and can include additional challenges beyond visual distortion.
+                      <strong>Note:</strong> This is a dyslexic simulation. The actual experience varies greatly between individuals and can include additional challenges beyond visual distortion.
                     </p>
                   </div>
                 </div>
