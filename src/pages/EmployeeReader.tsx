@@ -20,10 +20,10 @@ const EmployeeReader = () => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    if (!file.type.startsWith('image/')) {
+    if (!file.type.startsWith('image/') && file.type !== 'application/pdf') {
       toast({
         title: "Invalid file type",
-        description: "Please upload an image file (PNG, JPG, etc.)",
+        description: "Please upload an image or PDF file",
         variant: "destructive",
       });
       return;
@@ -31,7 +31,7 @@ const EmployeeReader = () => {
 
     setIsProcessing(true);
     toast({
-      title: "Processing image...",
+      title: `Processing ${file.type === 'application/pdf' ? 'PDF' : 'image'}...`,
       description: "Extracting text with AI-powered OCR",
     });
 
@@ -103,7 +103,7 @@ const EmployeeReader = () => {
               <Label htmlFor="file-upload" className="cursor-pointer">
                 <div className="border-2 border-dashed border-border rounded-lg p-8 text-center hover:border-primary transition-colors">
                   <Upload className="mx-auto h-12 w-12 text-muted-foreground mb-2" />
-                  <p className="text-sm text-muted-foreground">Click to upload an image or document</p>
+                  <p className="text-sm text-muted-foreground">Click to upload an image or PDF document</p>
                   <input
                     id="file-upload"
                     type="file"
