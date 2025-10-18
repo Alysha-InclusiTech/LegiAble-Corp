@@ -52,15 +52,15 @@ const Index = () => {
               <ul className="text-sm text-muted-foreground space-y-2 mb-6 text-left">
                 <li className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-accent" />
+                  OCR text extraction
+                </li>
+                <li className="flex items-center gap-2">
+                  <Eye className="h-4 w-4 text-accent" />
                   OpenDyslexic font rendering
                 </li>
                 <li className="flex items-center gap-2">
                   <Eye className="h-4 w-4 text-accent" />
                   Interactive reading ruler
-                </li>
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  OCR text extraction
                 </li>
               </ul>
               <Button className="w-full" size="lg">
