@@ -54,30 +54,28 @@ const EmployerPortal = () => {
     setIsLoading(true);
     setAiSuggestions([]);
 
-    if (percentageScore < 50) {
-      try {
-        const { data, error } = await supabase.functions.invoke('accessibility-suggestions', {
-          body: { questions, answers }
-        });
+    try {
+      const { data, error } = await supabase.functions.invoke('accessibility-suggestions', {
+        body: { questions, answers }
+      });
 
-        if (error) {
-          console.error("Error getting suggestions:", error);
-          toast({
-            title: "Error",
-            description: "Failed to generate personalized suggestions. Please try again.",
-            variant: "destructive",
-          });
-        } else if (data?.suggestions) {
-          setAiSuggestions(data.suggestions);
-        }
-      } catch (error) {
-        console.error("Error:", error);
+      if (error) {
+        console.error("Error getting suggestions:", error);
         toast({
           title: "Error",
           description: "Failed to generate personalized suggestions. Please try again.",
           variant: "destructive",
         });
+      } else if (data?.suggestions) {
+        setAiSuggestions(data.suggestions);
       }
+    } catch (error) {
+      console.error("Error:", error);
+      toast({
+        title: "Error",
+        description: "Failed to generate personalized suggestions. Please try again.",
+        variant: "destructive",
+      });
     }
     
     setIsLoading(false);
@@ -280,22 +278,22 @@ const EmployerPortal = () => {
                   </div>
                 )}
 
-                {percentageScore < 50 && aiSuggestions.length > 0 && (
-                  <div className="mt-6 p-4 bg-amber-50 dark:bg-amber-950/20 border border-amber-200 dark:border-amber-800 rounded-lg">
-                    <h3 className="font-semibold text-amber-900 dark:text-amber-100 mb-3">
+                {aiSuggestions.length > 0 && (
+                  <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
+                    <h3 className="font-semibold mb-3">
                       Top 3 Things You Can Do Today:
                     </h3>
                     <div className="space-y-3">
                       {aiSuggestions.map((suggestion, index) => (
                         <div key={index} className="flex gap-3">
-                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-amber-200 dark:bg-amber-800 text-amber-900 dark:text-amber-100 flex items-center justify-center text-sm font-bold">
+                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
                             {index + 1}
                           </span>
                           <div>
-                            <p className="text-sm font-medium text-amber-900 dark:text-amber-100">
+                            <p className="text-sm font-medium">
                               {suggestion.action}
                             </p>
-                            <p className="text-xs text-amber-700 dark:text-amber-300 mt-1">
+                            <p className="text-xs text-muted-foreground mt-1">
                               {suggestion.impact}
                             </p>
                           </div>
