@@ -3,57 +3,45 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
-import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
-import { Eye, Check, AlertCircle } from "lucide-react";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Eye } from "lucide-react";
 
-interface ChecklistItem {
+interface ChecklistQuestion {
   id: string;
-  label: string;
-  status: "pass" | "warning";
-  met: boolean;
+  question: string;
 }
 
 const EmployerPortal = () => {
   const [showEmpathyView, setShowEmpathyView] = useState(false);
-  const [emailText, setEmailText] = useState("");
-  const [inclusiveMode, setInclusiveMode] = useState(false);
-
-  // Calculate sentence lengths
-  const sentences = emailText.split(/[.!?]+/).filter(s => s.trim().length > 0);
-  const hasLongSentences = sentences.some(s => s.trim().split(/\s+/).length > 20);
-
-  // Checklist items
-  const checklist: ChecklistItem[] = [
-    {
-      id: "1",
-      label: "Font is dyslexia-friendly",
-      status: "pass",
-      met: inclusiveMode,
-    },
-    {
-      id: "2",
-      label: "Line spacing is comfortable",
-      status: "pass",
-      met: inclusiveMode,
-    },
-    {
-      id: "3",
-      label: "Try shorter sentences (< 20 words)",
-      status: "warning",
-      met: !hasLongSentences && emailText.length > 0,
-    },
-    {
-      id: "4",
-      label: "Contrast meets readability standards",
-      status: "pass",
-      met: inclusiveMode,
-    },
+  
+  const questions: ChecklistQuestion[] = [
+    { id: "1", question: "Have I asked my employees what helps them work best in the last 6 months?" },
+    { id: "2", question: "Is my language clear, simple, and free of jargon or acronyms when I talk and write?" },
+    { id: "3", question: "Am I using an easy-to-read font like OpenDyslexic, Arial, or Verdana (12–14 pt)?" },
+    { id: "4", question: "Does my layout use good spacing, bullet points, and high contrast (no ALL CAPS or italics)?" },
+    { id: "5", question: "Have I provided digital or editable versions of documents and captions or transcripts for videos?" },
+    { id: "6", question: "Do I share agendas and onboarding materials early so everyone can prepare?" },
+    { id: "7", question: "Am I offering flexible options like quiet zones or flexible hours for focus?" },
+    { id: "8", question: "Have my managers had basic training on accommodations and inclusive communication?" },
+    { id: "9", question: "Have I tested my materials through a dyslexic or accessibility preview (like LegiAble)?" },
+    { id: "10", question: "Do we set and review small accessibility goals regularly to keep improving?" },
   ];
 
-  const completionPercentage = emailText.length > 0 
-    ? Math.round((checklist.filter(item => item.met).length / checklist.length) * 100)
-    : 0;
+  const [answers, setAnswers] = useState<Record<string, number>>(
+    questions.reduce((acc, q) => ({ ...acc, [q.id]: 0 }), {})
+  );
+
+  const totalScore = Object.values(answers).reduce((sum, val) => sum + val, 0);
+  const percentageScore = Math.round((totalScore / 50) * 100);
+
+  const handleAnswerChange = (questionId: string, value: string) => {
+    const scoreMap: Record<string, number> = {
+      "yes": 5,
+      "working": 3,
+      "not-yet": 0,
+    };
+    setAnswers(prev => ({ ...prev, [questionId]: scoreMap[value] }));
+  };
 
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
 
@@ -159,91 +147,76 @@ const EmployerPortal = () => {
             </div>
           </Card>
 
-          {/* Inclusive Email Mode */}
+          {/* Accessibility Checklist */}
           <Card className="p-6">
-            <div className="flex items-center justify-between mb-4">
-              <h2 className="text-2xl font-semibold">Inclusive Email Mode</h2>
-              <div className="flex items-center gap-2">
-                <Label htmlFor="inclusive-mode" className="text-sm">
-                  🧠 Inclusive Mode
-                </Label>
-                <Switch
-                  id="inclusive-mode"
-                  checked={inclusiveMode}
-                  onCheckedChange={setInclusiveMode}
-                />
+            <h2 className="text-2xl font-semibold mb-4">Accessibility Checklist</h2>
+            
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-sm text-muted-foreground">
+                  Your Accessibility Score
+                </span>
+                <span className="text-2xl font-bold text-primary">
+                  {percentageScore}%
+                </span>
               </div>
+              <Progress value={percentageScore} className="h-3" />
             </div>
 
-            <p className="text-sm text-muted-foreground mb-4">
-              Help make your emails easier for dyslexic employees to read
-            </p>
-
-            <Textarea
-              placeholder="Write your email here…"
-              value={emailText}
-              onChange={(e) => setEmailText(e.target.value)}
-              className="min-h-[200px] mb-4 transition-all duration-300"
-              style={
-                inclusiveMode
-                  ? {
-                      fontFamily: "OpenDyslexic, Arial, sans-serif",
-                      lineHeight: "1.5",
-                      backgroundColor: "#FFF7E6",
-                      color: "#222222",
+            <div className="space-y-6">
+              {questions.map((question) => (
+                <div key={question.id} className="space-y-2">
+                  <p className="text-sm font-medium">{question.question}</p>
+                  <RadioGroup
+                    value={
+                      answers[question.id] === 5 
+                        ? "yes" 
+                        : answers[question.id] === 3 
+                        ? "working" 
+                        : "not-yet"
                     }
-                  : {}
-              }
-            />
-
-            {emailText.length > 0 && (
-              <>
-                <div className="mb-4">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">
-                      Dyslexia-Friendly Score
-                    </span>
-                    <span className="text-sm font-semibold text-primary">
-                      {completionPercentage}%
-                    </span>
-                  </div>
-                  <Progress value={completionPercentage} className="h-2" />
-                </div>
-
-                <div className="space-y-2 mb-4">
-                  {checklist.map((item) => (
-                    <div
-                      key={item.id}
-                      className="flex items-center gap-2 text-sm"
-                    >
-                      {item.met ? (
-                        <Check className="h-4 w-4 text-green-600" />
-                      ) : item.status === "warning" ? (
-                        <AlertCircle className="h-4 w-4 text-amber-500" />
-                      ) : (
-                        <div className="h-4 w-4" />
-                      )}
-                      <span
-                        className={
-                          item.met
-                            ? "text-foreground"
-                            : "text-muted-foreground"
-                        }
-                      >
-                        {item.label}
-                      </span>
+                    onValueChange={(value) => handleAnswerChange(question.id, value)}
+                  >
+                    <div className="grid grid-cols-3 gap-2">
+                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
+                        <RadioGroupItem value="yes" id={`${question.id}-yes`} />
+                        <Label 
+                          htmlFor={`${question.id}-yes`} 
+                          className="text-xs cursor-pointer flex-1"
+                        >
+                          Yes (5 pts)
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
+                        <RadioGroupItem value="working" id={`${question.id}-working`} />
+                        <Label 
+                          htmlFor={`${question.id}-working`} 
+                          className="text-xs cursor-pointer flex-1"
+                        >
+                          Working on it (3 pts)
+                        </Label>
+                      </div>
+                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
+                        <RadioGroupItem value="not-yet" id={`${question.id}-not-yet`} />
+                        <Label 
+                          htmlFor={`${question.id}-not-yet`} 
+                          className="text-xs cursor-pointer flex-1"
+                        >
+                          Not yet (0 pts)
+                        </Label>
+                      </div>
                     </div>
-                  ))}
+                  </RadioGroup>
                 </div>
+              ))}
+            </div>
 
-                {inclusiveMode && completionPercentage >= 75 && (
-                  <div className="p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                    <p className="text-sm text-green-800 dark:text-green-200">
-                      🎉 Your email is now easier to read for dyslexic employees!
-                    </p>
-                  </div>
-                )}
-              </>
+            {percentageScore >= 80 && (
+              <div className="mt-6 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
+                <p className="text-sm text-green-800 dark:text-green-200">
+                  🎉 Great job! You're creating an inclusive workplace for employees with dyslexia!
+                </p>
+              </div>
             )}
           </Card>
         </div>
