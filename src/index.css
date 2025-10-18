@@ -8,8 +8,8 @@
   src:
     local('OpenDyslexic Regular'),
     local('OpenDyslexic'),
-    url('/fonts/OpenDyslexic-Regular.woff2') format('woff2'),
-    url('/fonts/OpenDyslexic-Regular.otf') format('opentype');
+    url('/fonts/OpenDyslexic-Regular.otf?v=2') format('opentype'),
+    url('/fonts/OpenDyslexic-Regular.woff2?v=2') format('woff2');
   font-weight: 400;
   font-style: normal;
   font-display: swap;
