@@ -80,7 +80,7 @@ const Index = () => {
             Making Inclusion Practical and Human
           </h2>
           <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-            Empowering employees with dyslexia and educating employers about inclusive workplace design
+            Empowering people with dyslexia and supporting organizations in creating inclusive environments at work, in schools and beyond
           </p>
           
           <Dialog open={open} onOpenChange={setOpen}>
