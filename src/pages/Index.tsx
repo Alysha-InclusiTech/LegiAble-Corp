@@ -8,27 +8,52 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { BookOpen, Briefcase, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 import legiableLogo from "@/assets/legiable-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
   const { toast } = useToast();
   const [open, setOpen] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
     email: "",
     reason: "",
   });
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Waitlist submission:", formData);
-    toast({
-      title: "Thank you for joining!",
-      description: "We'll be in touch soon.",
-    });
-    setOpen(false);
-    setFormData({ name: "", email: "", reason: "" });
+    setIsSubmitting(true);
+
+    try {
+      const { error } = await supabase
+        .from('waitlist')
+        .insert([
+          {
+            name: formData.name,
+            email: formData.email,
+            reason: formData.reason,
+          }
+        ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Thank you for joining!",
+        description: "We'll be in touch soon.",
+      });
+      setOpen(false);
+      setFormData({ name: "", email: "", reason: "" });
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to submit. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
@@ -36,7 +61,7 @@ const Index = () => {
       {/* Hero Section */}
       <header className="border-b border-border/40 bg-background">
         <div className="max-w-6xl mx-auto px-4 py-5">
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-2">
             <div className="h-12 w-12 rounded-md flex items-center justify-center">
               <img src={legiableLogo} alt="LegiAble Logo" className="h-12 w-12" />
             </div>
@@ -60,7 +85,7 @@ const Index = () => {
           
           <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-              <Button size="lg" className="mt-2">
+              <Button size="lg" className="mt-2 h-14 px-10 text-lg font-semibold">
                 Join Waitlist
               </Button>
             </DialogTrigger>
@@ -115,8 +140,8 @@ const Index = () => {
                     </div>
                   </RadioGroup>
                 </div>
-                <Button type="submit" className="w-full">
-                  Submit
+                <Button type="submit" className="w-full" disabled={isSubmitting}>
+                  {isSubmitting ? "Submitting..." : "Submit"}
                 </Button>
               </form>
             </DialogContent>
