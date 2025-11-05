@@ -114,7 +114,7 @@ const Index = () => {
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label>Why are you interested?</Label>
+                  <Label>Which best describes you?</Label>
                   <RadioGroup
                     value={formData.reason}
                     onValueChange={(value) => setFormData({ ...formData, reason: value })}
