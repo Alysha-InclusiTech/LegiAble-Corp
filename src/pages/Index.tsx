@@ -1,11 +1,35 @@
 import { useNavigate } from "react-router-dom";
+import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { BookOpen, Briefcase, Eye } from "lucide-react";
+import { useToast } from "@/hooks/use-toast";
 import legiableLogo from "@/assets/legiable-logo.png";
 
 const Index = () => {
   const navigate = useNavigate();
+  const { toast } = useToast();
+  const [open, setOpen] = useState(false);
+  const [formData, setFormData] = useState({
+    name: "",
+    email: "",
+    reason: "",
+  });
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    console.log("Waitlist submission:", formData);
+    toast({
+      title: "Thank you for joining!",
+      description: "We'll be in touch soon.",
+    });
+    setOpen(false);
+    setFormData({ name: "", email: "", reason: "" });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -30,9 +54,73 @@ const Index = () => {
           <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
             Making Inclusion Practical and Human
           </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
+          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
             Empowering employees with dyslexia and educating employers about inclusive workplace design
           </p>
+          
+          <Dialog open={open} onOpenChange={setOpen}>
+            <DialogTrigger asChild>
+              <Button size="lg" className="mt-2">
+                Join Waitlist
+              </Button>
+            </DialogTrigger>
+            <DialogContent>
+              <DialogHeader>
+                <DialogTitle>Join Our Waitlist</DialogTitle>
+              </DialogHeader>
+              <form onSubmit={handleSubmit} className="space-y-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">Name</Label>
+                  <Input
+                    id="name"
+                    value={formData.name}
+                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="email">Email Address</Label>
+                  <Input
+                    id="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                    required
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label>Why are you interested?</Label>
+                  <RadioGroup
+                    value={formData.reason}
+                    onValueChange={(value) => setFormData({ ...formData, reason: value })}
+                    required
+                  >
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="dyslexia" id="dyslexia" />
+                      <Label htmlFor="dyslexia" className="font-normal cursor-pointer">
+                        I have dyslexia
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="workplace" id="workplace" />
+                      <Label htmlFor="workplace" className="font-normal cursor-pointer">
+                        I want to make my workplaces more inclusive
+                      </Label>
+                    </div>
+                    <div className="flex items-center space-x-2">
+                      <RadioGroupItem value="schools" id="schools" />
+                      <Label htmlFor="schools" className="font-normal cursor-pointer">
+                        I want to see this in schools/universities
+                      </Label>
+                    </div>
+                  </RadioGroup>
+                </div>
+                <Button type="submit" className="w-full">
+                  Submit
+                </Button>
+              </form>
+            </DialogContent>
+          </Dialog>
         </div>
 
         {/* Two-Path Selection */}
