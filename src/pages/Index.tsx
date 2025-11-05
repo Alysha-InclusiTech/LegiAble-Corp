@@ -219,10 +219,10 @@ const Index = () => {
 
         {/* Info Section */}
         <div className="mt-20 text-center max-w-3xl mx-auto">
-          <h3 className="text-2xl font-semibold mb-4">About Dyslexia in the Workplace</h3>
+          <h3 className="text-2xl font-semibold mb-4">About Dyslexia</h3>
           <p className="text-muted-foreground leading-relaxed">
-            Dyslexia affects approximately 10-15% of the population, yet many workplaces lack proper 
-            accommodations. LegiAble bridges this gap by providing accessible reading tools for employees 
+            Dyslexia affects approximately 10-15% of the population, yet many workplaces and schools lack proper 
+            accommodations. LegiAble bridges this gap by providing accessible reading tools for people with dyslexia 
             and educational resources for employers to create truly inclusive environments.
           </p>
         </div>
