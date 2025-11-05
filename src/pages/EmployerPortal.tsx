@@ -21,15 +21,15 @@ const EmployerPortal = () => {
   const { toast } = useToast();
   
   const questions: ChecklistQuestion[] = [
-    { id: "1", question: "Have I asked my employees what helps them work best in the last 6 months?" },
+    { id: "1", question: "Have I asked employees what helps them work best in the past 6 months?" },
     { id: "2", question: "Is my language clear, simple, and free of jargon or acronyms when I talk and write?" },
-    { id: "3", question: "Do I use clear formatting like bullet points, short paragraphs, and plenty of white space?" },
-    { id: "4", question: "Are my documents shared in formats employees can adjust (like Word, Google Docs, or with live captions)?" },
+    { id: "3", question: "Do I use clear formatting — like bullet points, short paragraphs, and white space — to make information easier to read?" },
+    { id: "4", question: "Do I share documents in flexible formats employees can adjust (e.g., Word, Google Docs, captioned content)?" },
     { id: "5", question: "Do I share agendas and onboarding materials early so everyone can prepare?" },
-    { id: "6", question: "Am I offering flexible options like quiet zones or flexible hours for focus?" },
-    { id: "7", question: "Do my team leaders know how to have supportive conversations about work adjustments?" },
+    { id: "6", question: "Do we offer flexible options — such as quiet zones or flexible hours — to support focused work?" },
+    { id: "7", question: "Do team leaders know how to have supportive conversations about work adjustments?" },
     { id: "8", question: "Have I asked for feedback on how easy our materials are to read and understand?" },
-    { id: "9", question: "Do we set and review small accessibility goals regularly to keep improving?" },
+    { id: "9", question: "Do we set and review small accessibility goals regularly to stay committed to improvement?" },
   ];
 
   const [answers, setAnswers] = useState<Record<string, number>>(
