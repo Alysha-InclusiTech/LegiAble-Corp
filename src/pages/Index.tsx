@@ -159,9 +159,9 @@ const Index = () => {
               <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
                 <BookOpen className="h-10 w-10 text-primary" />
               </div>
-              <h3 className="text-2xl font-semibold mb-3">I'm an Employee</h3>
+              <h3 className="text-2xl font-semibold mb-3">I have Dyslexia</h3>
               <p className="text-muted-foreground mb-6">
-                Upload images with text using OCR technology to convert to dyslexic-friendly fonts with a reading ruler to aid employees with dyslexia or ADHD
+                Upload images with text using OCR technology to convert to dyslexic-friendly fonts with a reading ruler to aid people with dyslexia or ADHD
               </p>
               <ul className="text-sm text-muted-foreground space-y-2 mb-6 text-left">
                 <li className="flex items-center gap-2">
