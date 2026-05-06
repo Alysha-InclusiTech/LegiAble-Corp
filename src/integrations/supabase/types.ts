@@ -14,6 +14,30 @@ export type Database = {
   }
   public: {
     Tables: {
+      employer_results: {
+        Row: {
+          answers: Json
+          created_at: string
+          email: string
+          id: string
+          score: number
+        }
+        Insert: {
+          answers: Json
+          created_at?: string
+          email: string
+          id?: string
+          score: number
+        }
+        Update: {
+          answers?: Json
+          created_at?: string
+          email?: string
+          id?: string
+          score?: number
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
