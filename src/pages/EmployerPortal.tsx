@@ -3,7 +3,7 @@ import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
+
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { Eye, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
@@ -93,6 +93,7 @@ const EmployerPortal = () => {
         email,
         score: percentageScore,
         answers,
+        ai_suggestions: aiSuggestions,
       }]);
       if (error) throw error;
       setEmailSent(true);
@@ -281,91 +282,44 @@ const EmployerPortal = () => {
                     Analyzing...
                   </>
                 ) : (
-                  "Submit & View Score"
+                  "Submit Checklist"
                 )}
               </Button>
             </div>
 
             {isSubmitted && !isLoading && (
-              <>
-                <div className="mt-6">
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="text-sm text-muted-foreground">
-                      Your Accessibility Score
-                    </span>
-                    <span className="text-2xl font-bold text-primary">
-                      {percentageScore}%
-                    </span>
-                  </div>
-                  <Progress value={percentageScore} className="h-3" />
+              <div className="mt-6 p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
+                <div className="flex items-center gap-2 mb-2">
+                  <Mail className="h-4 w-4 text-secondary" />
+                  <h3 className="font-semibold">Get your accessibility results</h3>
                 </div>
-
-                {percentageScore >= 80 && (
-                  <div className="mt-6 p-3 bg-green-50 dark:bg-green-950/20 border border-green-200 dark:border-green-800 rounded-lg">
-                    <p className="text-sm text-green-800 dark:text-green-200">
-                      🎉 Great job! You're creating an inclusive workplace for employees with dyslexia!
-                    </p>
-                  </div>
-                )}
-
-                {aiSuggestions.length > 0 && (
-                  <div className="mt-6 p-4 bg-primary/5 border border-primary/20 rounded-lg">
-                    <h3 className="font-semibold mb-3">
-                      Top 3 Things You Can Do Today:
-                    </h3>
-                    <div className="space-y-3">
-                      {aiSuggestions.map((suggestion, index) => (
-                        <div key={index} className="flex gap-3">
-                          <span className="flex-shrink-0 w-6 h-6 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-sm font-bold">
-                            {index + 1}
-                          </span>
-                          <div>
-                            <p className="text-sm font-medium">
-                              {suggestion.action}
-                            </p>
-                            <p className="text-xs text-muted-foreground mt-1">
-                              {suggestion.impact}
-                            </p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                <div className="mt-6 p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Mail className="h-4 w-4 text-secondary" />
-                    <h3 className="font-semibold">Email me my results</h3>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Enter your email and we'll send a copy of your accessibility score and personalized suggestions.
+                <p className="text-xs text-muted-foreground mb-3">
+                  Enter your email and we'll send your score plus your top 3 personalized improvements.
+                </p>
+                {emailSent ? (
+                  <p className="text-sm text-green-700 dark:text-green-300">
+                    ✓ Your results are on their way to {email}.
                   </p>
-                  {emailSent ? (
-                    <p className="text-sm text-green-700 dark:text-green-300">
-                      ✓ Thanks! Your results are on their way to {email}.
-                    </p>
-                  ) : (
-                    <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
-                      <Input
-                        type="email"
-                        placeholder="you@company.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="flex-1"
-                      />
-                      <Button type="submit" disabled={isSendingEmail}>
-                        {isSendingEmail ? (
-                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending...</>
-                        ) : (
-                          "Send Results"
-                        )}
-                      </Button>
-                    </form>
-                  )}
-                </div>
-              </>
+                ) : (
+                  <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
+                    <Input
+                      type="email"
+                      placeholder="you@company.com"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      required
+                      className="flex-1"
+                    />
+                    <Button type="submit" disabled={isSendingEmail}>
+                      {isSendingEmail ? (
+                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending...</>
+                      ) : (
+                        "Send My Results"
+                      )}
+                    </Button>
+                  </form>
+                )}
+              </div>
             )}
           </Card>
         </div>

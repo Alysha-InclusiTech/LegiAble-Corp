@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       employer_results: {
         Row: {
+          ai_suggestions: Json | null
           answers: Json
           created_at: string
           email: string
@@ -23,6 +24,7 @@ export type Database = {
           score: number
         }
         Insert: {
+          ai_suggestions?: Json | null
           answers: Json
           created_at?: string
           email: string
@@ -30,6 +32,7 @@ export type Database = {
           score: number
         }
         Update: {
+          ai_suggestions?: Json | null
           answers?: Json
           created_at?: string
           email?: string
