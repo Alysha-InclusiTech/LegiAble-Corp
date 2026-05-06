@@ -19,6 +19,9 @@ const EmployerPortal = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<Array<{ action: string; impact: string }>>([]);
+  const [email, setEmail] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
   
   const questions: ChecklistQuestion[] = [
