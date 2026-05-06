@@ -282,7 +282,7 @@ const EmployerPortal = () => {
                     Analyzing...
                   </>
                 ) : (
-                  "Submit & View Score"
+                  "Submit Checklist"
                 )}
               </Button>
             </div>
