@@ -332,6 +332,39 @@ const EmployerPortal = () => {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-6 p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Mail className="h-4 w-4 text-secondary" />
+                    <h3 className="font-semibold">Email me my results</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Enter your email and we'll send a copy of your accessibility score and personalized suggestions.
+                  </p>
+                  {emailSent ? (
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      ✓ Thanks! Your results are on their way to {email}.
+                    </p>
+                  ) : (
+                    <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
+                      <Input
+                        type="email"
+                        placeholder="you@company.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="flex-1"
+                      />
+                      <Button type="submit" disabled={isSendingEmail}>
+                        {isSendingEmail ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending...</>
+                        ) : (
+                          "Send Results"
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                </div>
               </>
             )}
           </Card>
