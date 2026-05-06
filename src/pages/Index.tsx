@@ -34,69 +34,6 @@ const Index = () => {
             Empowering people with dyslexia and supporting organizations in creating inclusive environments at work, in schools and beyond
           </p>
           
-          <Dialog open={open} onOpenChange={setOpen}>
-            <DialogTrigger asChild>
-              <Button size="lg" className="mt-2 h-14 px-10 text-lg font-semibold">
-                Join Waitlist
-              </Button>
-            </DialogTrigger>
-            <DialogContent>
-              <DialogHeader>
-                <DialogTitle>Join Our Waitlist</DialogTitle>
-              </DialogHeader>
-              <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="space-y-2">
-                  <Label htmlFor="name">Name</Label>
-                  <Input
-                    id="name"
-                    value={formData.name}
-                    onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label htmlFor="email">Email Address</Label>
-                  <Input
-                    id="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    required
-                  />
-                </div>
-                <div className="space-y-2">
-                  <Label>Which best describes you?</Label>
-                  <RadioGroup
-                    value={formData.reason}
-                    onValueChange={(value) => setFormData({ ...formData, reason: value })}
-                    required
-                  >
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="dyslexia" id="dyslexia" />
-                      <Label htmlFor="dyslexia" className="font-normal cursor-pointer">
-                        I have dyslexia
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="workplace" id="workplace" />
-                      <Label htmlFor="workplace" className="font-normal cursor-pointer">
-                        I want to make my workplaces more inclusive
-                      </Label>
-                    </div>
-                    <div className="flex items-center space-x-2">
-                      <RadioGroupItem value="schools" id="schools" />
-                      <Label htmlFor="schools" className="font-normal cursor-pointer">
-                        I want to see this in schools/universities
-                      </Label>
-                    </div>
-                  </RadioGroup>
-                </div>
-                <Button type="submit" className="w-full" disabled={isSubmitting}>
-                  {isSubmitting ? "Submitting..." : "Submit"}
-                </Button>
-              </form>
-            </DialogContent>
-          </Dialog>
         </div>
 
         {/* Two-Path Selection */}
