@@ -85,6 +85,32 @@ const EmployerPortal = () => {
     setIsLoading(false);
   };
 
+  const handleEmailResults = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSendingEmail(true);
+    try {
+      const { error } = await supabase.from('employer_results').insert([{
+        email,
+        score: percentageScore,
+        answers,
+      }]);
+      if (error) throw error;
+      setEmailSent(true);
+      toast({
+        title: "Results saved!",
+        description: "We'll send your results to your inbox shortly.",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to save your email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
+  };
+
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
 
   return (
