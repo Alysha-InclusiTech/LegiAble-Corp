@@ -1,0 +1,1 @@
+ALTER TABLE public.employer_results ADD COLUMN IF NOT EXISTS ai_suggestions jsonb;
