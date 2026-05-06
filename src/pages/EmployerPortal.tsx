@@ -2,9 +2,10 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Progress } from "@/components/ui/progress";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Eye, Loader2 } from "lucide-react";
+import { Eye, Loader2, Mail } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useToast } from "@/hooks/use-toast";
 
@@ -18,6 +19,9 @@ const EmployerPortal = () => {
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [aiSuggestions, setAiSuggestions] = useState<Array<{ action: string; impact: string }>>([]);
+  const [email, setEmail] = useState("");
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [emailSent, setEmailSent] = useState(false);
   const { toast } = useToast();
   
   const questions: ChecklistQuestion[] = [
@@ -79,6 +83,32 @@ const EmployerPortal = () => {
     }
     
     setIsLoading(false);
+  };
+
+  const handleEmailResults = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setIsSendingEmail(true);
+    try {
+      const { error } = await supabase.from('employer_results').insert([{
+        email,
+        score: percentageScore,
+        answers,
+      }]);
+      if (error) throw error;
+      setEmailSent(true);
+      toast({
+        title: "Results saved!",
+        description: "We'll send your results to your inbox shortly.",
+      });
+    } catch (err) {
+      toast({
+        title: "Error",
+        description: "Failed to save your email. Please try again.",
+        variant: "destructive",
+      });
+    } finally {
+      setIsSendingEmail(false);
+    }
   };
 
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
@@ -302,6 +332,39 @@ const EmployerPortal = () => {
                     </div>
                   </div>
                 )}
+
+                <div className="mt-6 p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Mail className="h-4 w-4 text-secondary" />
+                    <h3 className="font-semibold">Email me my results</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Enter your email and we'll send a copy of your accessibility score and personalized suggestions.
+                  </p>
+                  {emailSent ? (
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      ✓ Thanks! Your results are on their way to {email}.
+                    </p>
+                  ) : (
+                    <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
+                      <Input
+                        type="email"
+                        placeholder="you@company.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="flex-1"
+                      />
+                      <Button type="submit" disabled={isSendingEmail}>
+                        {isSendingEmail ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending...</>
+                        ) : (
+                          "Send Results"
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                </div>
               </>
             )}
           </Card>
