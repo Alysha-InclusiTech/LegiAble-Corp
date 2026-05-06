@@ -93,6 +93,7 @@ const EmployerPortal = () => {
         email,
         score: percentageScore,
         answers,
+        ai_suggestions: aiSuggestions,
       }]);
       if (error) throw error;
       setEmailSent(true);
