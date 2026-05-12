@@ -1,116 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Eye, Loader2, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-
-interface ChecklistQuestion {
-  id: string;
-  question: string;
-}
+import { Eye } from "lucide-react";
 
 const EmployerPortal = () => {
   const [showEmpathyView, setShowEmpathyView] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<Array<{ action: string; impact: string }>>([]);
-  const [email, setEmail] = useState("");
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const { toast } = useToast();
-  
-  const questions: ChecklistQuestion[] = [
-    { id: "1", question: "Have I asked employees what helps them work best in the past 6 months?" },
-    { id: "2", question: "Is my language clear, simple, and free of jargon or acronyms when I talk and write?" },
-    { id: "3", question: "Do I use clear formatting — like bullet points, short paragraphs, and white space — to make information easier to read?" },
-    { id: "4", question: "Do I share documents in flexible formats employees can adjust (e.g., Word, Google Docs, captioned content)?" },
-    { id: "5", question: "Do I share agendas and onboarding materials early so everyone can prepare?" },
-    { id: "6", question: "Do we offer flexible options — such as quiet zones or flexible hours — to support focused work?" },
-    { id: "7", question: "Do team leaders know how to have supportive conversations about work adjustments?" },
-    { id: "8", question: "Have I asked for feedback on how easy our materials are to read and understand?" },
-    { id: "9", question: "Do we set and review small accessibility goals regularly to stay committed to improvement?" },
-  ];
 
-  const [answers, setAnswers] = useState<Record<string, number>>(
-    questions.reduce((acc, q) => ({ ...acc, [q.id]: 0 }), {})
-  );
-
-  const totalScore = Object.values(answers).reduce((sum, val) => sum + val, 0);
-  const percentageScore = Math.round((totalScore / 45) * 100);
-
-  const handleAnswerChange = (questionId: string, value: string) => {
-    const scoreMap: Record<string, number> = {
-      "yes": 5,
-      "working": 3,
-      "not-yet": 0,
-    };
-    setAnswers(prev => ({ ...prev, [questionId]: scoreMap[value] }));
-    setIsSubmitted(false);
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitted(true);
-    setIsLoading(true);
-    setAiSuggestions([]);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('accessibility-suggestions', {
-        body: { questions, answers }
-      });
-
-      if (error) {
-        console.error("Error getting suggestions:", error);
-        toast({
-          title: "Error",
-          description: "Failed to generate personalized suggestions. Please try again.",
-          variant: "destructive",
-        });
-      } else if (data?.suggestions) {
-        setAiSuggestions(data.suggestions);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate personalized suggestions. Please try again.",
-        variant: "destructive",
-      });
+  useEffect(() => {
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://tally.so/widgets/embed.js"]');
+    if (!existing) {
+      const script = document.createElement("script");
+      script.src = "https://tally.so/widgets/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    } else {
+      // @ts-ignore
+      window.Tally?.loadEmbeds?.();
     }
-    
-    setIsLoading(false);
-  };
-
-  const handleEmailResults = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSendingEmail(true);
-    try {
-      const { error } = await supabase.from('employer_results').insert([{
-        email,
-        score: percentageScore,
-        answers,
-        ai_suggestions: aiSuggestions,
-      }]);
-      if (error) throw error;
-      setEmailSent(true);
-      toast({
-        title: "Results saved!",
-        description: "We'll send your results to your inbox shortly.",
-      });
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to save your email. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSendingEmail(false);
-    }
-  };
+  }, []);
 
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
 
@@ -221,146 +128,14 @@ const EmployerPortal = () => {
             <h2 className="text-2xl font-semibold mb-2">Accessibility Checklist</h2>
             <p className="text-sm text-muted-foreground mb-6">Check this list monthly to track your progress</p>
 
-            <div className="space-y-6">
-              {questions.map((question) => (
-                <div key={question.id} className="space-y-2">
-                  <p className="text-sm font-medium">{question.question}</p>
-                  <RadioGroup
-                    value={
-                      answers[question.id] === 5 
-                        ? "yes" 
-                        : answers[question.id] === 3 
-                        ? "working" 
-                        : "not-yet"
-                    }
-                    onValueChange={(value) => handleAnswerChange(question.id, value)}
-                  >
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
-                        <RadioGroupItem value="yes" id={`${question.id}-yes`} />
-                        <Label 
-                          htmlFor={`${question.id}-yes`} 
-                          className="text-xs cursor-pointer flex-1"
-                        >
-                          Yes (5 pts)
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
-                        <RadioGroupItem value="working" id={`${question.id}-working`} />
-                        <Label 
-                          htmlFor={`${question.id}-working`} 
-                          className="text-xs cursor-pointer flex-1"
-                        >
-                          Working on it (3 pts)
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
-                        <RadioGroupItem value="not-yet" id={`${question.id}-not-yet`} />
-                        <Label 
-                          htmlFor={`${question.id}-not-yet`} 
-                          className="text-xs cursor-pointer flex-1"
-                        >
-                          Not yet (0 pts)
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 flex justify-center">
-              <Button 
-                onClick={handleSubmit} 
-                disabled={isLoading}
-                size="lg"
-                className="w-full md:w-auto"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Analyzing...
-                  </>
-                ) : (
-                  "Submit Checklist"
-                )}
-              </Button>
-            </div>
-
-            {isSubmitted && !isLoading && (
-              <div className="mt-6 space-y-6">
-                {/* Score */}
-                <div className="p-6 bg-primary/5 border border-primary/20 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-4">Your Accessibility Score</h3>
-                  <div className="flex items-center gap-4 mb-2">
-                    <span className="text-4xl font-bold text-primary">{percentageScore}%</span>
-                    <span className="text-sm text-muted-foreground">of 100%</span>
-                  </div>
-                  <Progress value={percentageScore} className="h-3" />
-                  {percentageScore >= 80 && (
-                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-                      <p className="text-sm text-green-800 dark:text-green-300">
-                        Great job! You're doing well on accessibility. Keep up the good work!
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* AI Suggestions */}
-                {aiSuggestions.length > 0 && (
-                  <div className="p-6 bg-card border border-border rounded-lg">
-                    <h3 className="text-xl font-semibold mb-4">Top 3 Things You Can Do Today</h3>
-                    <div className="space-y-4">
-                      {aiSuggestions.map((suggestion, index) => (
-                        <div key={index} className="flex gap-4 p-4 bg-secondary/5 rounded-lg">
-                          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-semibold text-primary">{index + 1}</span>
-                          </div>
-                          <div>
-                            <p className="font-medium mb-1">{suggestion.action}</p>
-                            <p className="text-sm text-muted-foreground">{suggestion.impact}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Email Results */}
-                <div className="p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Mail className="h-4 w-4 text-secondary" />
-                    <h3 className="font-semibold">Email me my results</h3>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Enter your email to receive a copy of your score and personalized improvements.
-                  </p>
-                  {emailSent ? (
-                    <p className="text-sm text-green-700 dark:text-green-300">
-                      ✓ Your results have been saved for {email}.
-                    </p>
-                  ) : (
-                    <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
-                      <Input
-                        type="email"
-                        placeholder="you@company.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="flex-1"
-                      />
-                      <Button type="submit" disabled={isSendingEmail}>
-                        {isSendingEmail ? (
-                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
-                        ) : (
-                          "Save My Results"
-                        )}
-                      </Button>
-                    </form>
-                  )}
-                </div>
-              </div>
-            )}
+            <iframe
+              data-tally-src="https://tally.so/embed/0Q1GzB?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              loading="lazy"
+              width="100%"
+              height="600"
+              frameBorder={0}
+              title="Accessibility Checklist"
+            />
           </Card>
         </div>
       </div>
