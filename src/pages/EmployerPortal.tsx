@@ -221,146 +221,16 @@ const EmployerPortal = () => {
             <h2 className="text-2xl font-semibold mb-2">Accessibility Checklist</h2>
             <p className="text-sm text-muted-foreground mb-6">Check this list monthly to track your progress</p>
 
-            <div className="space-y-6">
-              {questions.map((question) => (
-                <div key={question.id} className="space-y-2">
-                  <p className="text-sm font-medium">{question.question}</p>
-                  <RadioGroup
-                    value={
-                      answers[question.id] === 5 
-                        ? "yes" 
-                        : answers[question.id] === 3 
-                        ? "working" 
-                        : "not-yet"
-                    }
-                    onValueChange={(value) => handleAnswerChange(question.id, value)}
-                  >
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
-                        <RadioGroupItem value="yes" id={`${question.id}-yes`} />
-                        <Label 
-                          htmlFor={`${question.id}-yes`} 
-                          className="text-xs cursor-pointer flex-1"
-                        >
-                          Yes (5 pts)
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
-                        <RadioGroupItem value="working" id={`${question.id}-working`} />
-                        <Label 
-                          htmlFor={`${question.id}-working`} 
-                          className="text-xs cursor-pointer flex-1"
-                        >
-                          Working on it (3 pts)
-                        </Label>
-                      </div>
-                      <div className="flex items-center space-x-2 border rounded-md p-2 hover:bg-accent">
-                        <RadioGroupItem value="not-yet" id={`${question.id}-not-yet`} />
-                        <Label 
-                          htmlFor={`${question.id}-not-yet`} 
-                          className="text-xs cursor-pointer flex-1"
-                        >
-                          Not yet (0 pts)
-                        </Label>
-                      </div>
-                    </div>
-                  </RadioGroup>
-                </div>
-              ))}
-            </div>
-
-            <div className="mt-6 flex justify-center">
-              <Button 
-                onClick={handleSubmit} 
-                disabled={isLoading}
-                size="lg"
-                className="w-full md:w-auto"
-              >
-                {isLoading ? (
-                  <>
-                    <Loader2 className="h-4 w-4 mr-2 animate-spin" />
-                    Analyzing...
-                  </>
-                ) : (
-                  "Submit Checklist"
-                )}
-              </Button>
-            </div>
-
-            {isSubmitted && !isLoading && (
-              <div className="mt-6 space-y-6">
-                {/* Score */}
-                <div className="p-6 bg-primary/5 border border-primary/20 rounded-lg">
-                  <h3 className="text-xl font-semibold mb-4">Your Accessibility Score</h3>
-                  <div className="flex items-center gap-4 mb-2">
-                    <span className="text-4xl font-bold text-primary">{percentageScore}%</span>
-                    <span className="text-sm text-muted-foreground">of 100%</span>
-                  </div>
-                  <Progress value={percentageScore} className="h-3" />
-                  {percentageScore >= 80 && (
-                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
-                      <p className="text-sm text-green-800 dark:text-green-300">
-                        Great job! You're doing well on accessibility. Keep up the good work!
-                      </p>
-                    </div>
-                  )}
-                </div>
-
-                {/* AI Suggestions */}
-                {aiSuggestions.length > 0 && (
-                  <div className="p-6 bg-card border border-border rounded-lg">
-                    <h3 className="text-xl font-semibold mb-4">Top 3 Things You Can Do Today</h3>
-                    <div className="space-y-4">
-                      {aiSuggestions.map((suggestion, index) => (
-                        <div key={index} className="flex gap-4 p-4 bg-secondary/5 rounded-lg">
-                          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
-                            <span className="text-sm font-semibold text-primary">{index + 1}</span>
-                          </div>
-                          <div>
-                            <p className="font-medium mb-1">{suggestion.action}</p>
-                            <p className="text-sm text-muted-foreground">{suggestion.impact}</p>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {/* Email Results */}
-                <div className="p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
-                  <div className="flex items-center gap-2 mb-2">
-                    <Mail className="h-4 w-4 text-secondary" />
-                    <h3 className="font-semibold">Email me my results</h3>
-                  </div>
-                  <p className="text-xs text-muted-foreground mb-3">
-                    Enter your email to receive a copy of your score and personalized improvements.
-                  </p>
-                  {emailSent ? (
-                    <p className="text-sm text-green-700 dark:text-green-300">
-                      ✓ Your results have been saved for {email}.
-                    </p>
-                  ) : (
-                    <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
-                      <Input
-                        type="email"
-                        placeholder="you@company.com"
-                        value={email}
-                        onChange={(e) => setEmail(e.target.value)}
-                        required
-                        className="flex-1"
-                      />
-                      <Button type="submit" disabled={isSendingEmail}>
-                        {isSendingEmail ? (
-                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
-                        ) : (
-                          "Save My Results"
-                        )}
-                      </Button>
-                    </form>
-                  )}
-                </div>
-              </div>
-            )}
+            <iframe
+              src="https://tally.so/embed/0Q1GzB?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
+              loading="lazy"
+              width="100%"
+              height="600"
+              frameBorder={0}
+              marginHeight={0}
+              marginWidth={0}
+              title="Accessibility Checklist"
+            />
           </Card>
         </div>
       </div>
