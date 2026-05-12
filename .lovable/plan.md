@@ -1,36 +1,58 @@
 ## Goal
 
-After the user clicks "Submit & View Score" on the Employer Accessibility Checklist, hide the score, progress bar, success message, and AI suggestions from the page. Instead, show only an email capture form. Once they submit their email, confirm their results have been sent — without ever displaying the score on screen.
+Use answers from the embedded Tally form ("The Inclusion Check") to:
+1. Calculate a total Inclusion Score (Yes=5, Working on it=2, Not yet=0, max 45 → %)
+2. Match each answer to a suggestion from a table you'll provide
+3. Save score, answers, suggestions, and email to the database
 
-## Changes
+## Architecture
 
-**1. Employer Portal (`src/pages/EmployerPortal.tsx`)**
+```text
+User fills Tally form ──► Tally webhook ──► Edge Function ──► employer_results table
+                                              │
+                                              ├─ compute score (5/2/0)
+                                              └─ look up suggestions in static map
+```
 
-After submit, instead of showing:
-- Accessibility score percentage + progress bar
-- "Great job!" green banner (80%+)
-- "Top 3 Things You Can Do Today" AI suggestions list
+## Steps
 
-Show a single email capture card:
-- Headline: "Get your accessibility results"
-- Short copy: "Enter your email and we'll send your score plus your top 3 personalized improvements."
-- Email input + "Send My Results" button (required field)
-- AI suggestions are still generated in the background and saved with the submission, but never rendered
+### 1. Provide the suggestions table
+Send me a table in this shape (one row per question + answer):
 
-After email submission:
-- Replace the form with a confirmation: "✓ Your results are on their way to {email}."
-- Score, suggestions, and progress bar remain hidden
+| Question ID / text | Answer (Yes / Working / Not yet) | Suggestion text |
+|---|---|---|
+| Q1 — Asked employees... | Not yet | "Send a 3-question pulse survey today..." |
+| Q1 — Asked employees... | Working on it | "..." |
+| ... | ... | ... |
 
-**2. Database (`employer_results` table)**
+Easiest: 9 questions × 3 answers = up to 27 suggestions. You can leave "Yes" rows blank — those won't generate a suggestion.
 
-Already exists with `email`, `score`, `answers`. Add an `ai_suggestions` JSONB column so the suggestions get saved alongside the score for future email delivery.
+### 2. Tally form setup (you do this once)
+- In your Tally form, make sure each question's answer options are exactly: **Yes**, **Working on it**, **Not yet** (so we can map them reliably)
+- Add an **Email** field at the end of the form
+- After I deploy the webhook, I'll give you a URL to paste into Tally → Integrations → Webhooks
 
-## Out of scope (ask after)
+### 3. Database change
+Add a `suggestions` (jsonb) column to `employer_results` so we store the matched suggestions per submission. Existing `score`, `answers`, `email`, `ai_suggestions` columns stay.
 
-- Actually sending the email. Right now the data is saved to the backend; results are not yet emailed. If you want real email delivery, that's a follow-up step (would set up email infrastructure on your domain).
+### 4. New edge function: `tally-webhook`
+- Public (no JWT), receives Tally's POST payload
+- Maps each question's answer → score (Yes=5, Working=2, Not yet=0)
+- Computes total + percentage (out of 45)
+- Looks up suggestions from the static table I'll embed in the function
+- Inserts a row into `employer_results` with email, score, answers, suggestions
 
-## Technical notes
+### 5. Frontend (`/employer`)
+- Keep the Tally embed as-is for the form
+- Replace the old AI-suggestion path
+- After Tally submission, show a "Thanks — your results have been emailed" confirmation (Tally fires a `Tally.FormSubmitted` postMessage we can listen to)
+- Optional: add an admin-only results view later
 
-- Remove the `Progress` import and the `{isSubmitted && !isLoading && (...)}` block that renders score/suggestions.
-- Keep `handleSubmit` calling the AI suggestions function so we capture them in state, then include them in the `employer_results` insert payload.
-- Keep the loading spinner on the submit button while AI suggestions are being generated, so the email form only appears once everything is ready to be saved.
+### 6. Score display
+Two options — pick one:
+- **A.** Don't show the score on the page; only email it (current direction)
+- **B.** After submission, fetch the latest result for that email and display the score + matched suggestions on the page
+
+## Open question for you
+
+Once you send the suggestions table and confirm the answer labels in Tally, I'll wire it all up. Also let me know A or B for the score display.
