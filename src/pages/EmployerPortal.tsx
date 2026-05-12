@@ -123,10 +123,9 @@ const EmployerPortal = () => {
             </div>
           </Card>
 
-          {/* Accessibility Checklist */}
+          {/* The Inclusion Check */}
           <Card className="p-6">
-            <h2 className="text-2xl font-semibold mb-2">Accessibility Checklist</h2>
-            <p className="text-sm text-muted-foreground mb-6">Check this list monthly to track your progress</p>
+            <h2 className="text-2xl font-semibold mb-6">The Inclusion Check</h2>
 
             <iframe
               data-tally-src="https://tally.so/embed/0Q1GzB?alignLeft=1&hideTitle=1&transparentBackground=1&dynamicHeight=1"
