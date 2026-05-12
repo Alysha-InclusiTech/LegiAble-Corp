@@ -288,37 +288,77 @@ const EmployerPortal = () => {
             </div>
 
             {isSubmitted && !isLoading && (
-              <div className="mt-6 p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
-                <div className="flex items-center gap-2 mb-2">
-                  <Mail className="h-4 w-4 text-secondary" />
-                  <h3 className="font-semibold">Get your accessibility results</h3>
+              <div className="mt-6 space-y-6">
+                {/* Score */}
+                <div className="p-6 bg-primary/5 border border-primary/20 rounded-lg">
+                  <h3 className="text-xl font-semibold mb-4">Your Accessibility Score</h3>
+                  <div className="flex items-center gap-4 mb-2">
+                    <span className="text-4xl font-bold text-primary">{percentageScore}%</span>
+                    <span className="text-sm text-muted-foreground">of 100%</span>
+                  </div>
+                  <Progress value={percentageScore} className="h-3" />
+                  {percentageScore >= 80 && (
+                    <div className="mt-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-md">
+                      <p className="text-sm text-green-800 dark:text-green-300">
+                        Great job! You're doing well on accessibility. Keep up the good work!
+                      </p>
+                    </div>
+                  )}
                 </div>
-                <p className="text-xs text-muted-foreground mb-3">
-                  Enter your email and we'll send your score plus your top 3 personalized improvements.
-                </p>
-                {emailSent ? (
-                  <p className="text-sm text-green-700 dark:text-green-300">
-                    ✓ Your results are on their way to {email}.
-                  </p>
-                ) : (
-                  <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
-                    <Input
-                      type="email"
-                      placeholder="you@company.com"
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="flex-1"
-                    />
-                    <Button type="submit" disabled={isSendingEmail}>
-                      {isSendingEmail ? (
-                        <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Sending...</>
-                      ) : (
-                        "Send My Results"
-                      )}
-                    </Button>
-                  </form>
+
+                {/* AI Suggestions */}
+                {aiSuggestions.length > 0 && (
+                  <div className="p-6 bg-card border border-border rounded-lg">
+                    <h3 className="text-xl font-semibold mb-4">Top 3 Things You Can Do Today</h3>
+                    <div className="space-y-4">
+                      {aiSuggestions.map((suggestion, index) => (
+                        <div key={index} className="flex gap-4 p-4 bg-secondary/5 rounded-lg">
+                          <div className="flex-shrink-0 w-8 h-8 bg-primary/10 rounded-full flex items-center justify-center">
+                            <span className="text-sm font-semibold text-primary">{index + 1}</span>
+                          </div>
+                          <div>
+                            <p className="font-medium mb-1">{suggestion.action}</p>
+                            <p className="text-sm text-muted-foreground">{suggestion.impact}</p>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 )}
+
+                {/* Email Results */}
+                <div className="p-4 bg-secondary/5 border border-secondary/20 rounded-lg">
+                  <div className="flex items-center gap-2 mb-2">
+                    <Mail className="h-4 w-4 text-secondary" />
+                    <h3 className="font-semibold">Email me my results</h3>
+                  </div>
+                  <p className="text-xs text-muted-foreground mb-3">
+                    Enter your email to receive a copy of your score and personalized improvements.
+                  </p>
+                  {emailSent ? (
+                    <p className="text-sm text-green-700 dark:text-green-300">
+                      ✓ Your results have been saved for {email}.
+                    </p>
+                  ) : (
+                    <form onSubmit={handleEmailResults} className="flex flex-col sm:flex-row gap-2">
+                      <Input
+                        type="email"
+                        placeholder="you@company.com"
+                        value={email}
+                        onChange={(e) => setEmail(e.target.value)}
+                        required
+                        className="flex-1"
+                      />
+                      <Button type="submit" disabled={isSendingEmail}>
+                        {isSendingEmail ? (
+                          <><Loader2 className="h-4 w-4 mr-2 animate-spin" />Saving...</>
+                        ) : (
+                          "Save My Results"
+                        )}
+                      </Button>
+                    </form>
+                  )}
+                </div>
               </div>
             )}
           </Card>
