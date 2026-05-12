@@ -1,116 +1,23 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
-import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Progress } from "@/components/ui/progress";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Eye, Loader2, Mail } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
-import { useToast } from "@/hooks/use-toast";
-
-interface ChecklistQuestion {
-  id: string;
-  question: string;
-}
+import { Eye } from "lucide-react";
 
 const EmployerPortal = () => {
   const [showEmpathyView, setShowEmpathyView] = useState(false);
-  const [isSubmitted, setIsSubmitted] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
-  const [aiSuggestions, setAiSuggestions] = useState<Array<{ action: string; impact: string }>>([]);
-  const [email, setEmail] = useState("");
-  const [isSendingEmail, setIsSendingEmail] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
-  const { toast } = useToast();
-  
-  const questions: ChecklistQuestion[] = [
-    { id: "1", question: "Have I asked employees what helps them work best in the past 6 months?" },
-    { id: "2", question: "Is my language clear, simple, and free of jargon or acronyms when I talk and write?" },
-    { id: "3", question: "Do I use clear formatting — like bullet points, short paragraphs, and white space — to make information easier to read?" },
-    { id: "4", question: "Do I share documents in flexible formats employees can adjust (e.g., Word, Google Docs, captioned content)?" },
-    { id: "5", question: "Do I share agendas and onboarding materials early so everyone can prepare?" },
-    { id: "6", question: "Do we offer flexible options — such as quiet zones or flexible hours — to support focused work?" },
-    { id: "7", question: "Do team leaders know how to have supportive conversations about work adjustments?" },
-    { id: "8", question: "Have I asked for feedback on how easy our materials are to read and understand?" },
-    { id: "9", question: "Do we set and review small accessibility goals regularly to stay committed to improvement?" },
-  ];
 
-  const [answers, setAnswers] = useState<Record<string, number>>(
-    questions.reduce((acc, q) => ({ ...acc, [q.id]: 0 }), {})
-  );
-
-  const totalScore = Object.values(answers).reduce((sum, val) => sum + val, 0);
-  const percentageScore = Math.round((totalScore / 45) * 100);
-
-  const handleAnswerChange = (questionId: string, value: string) => {
-    const scoreMap: Record<string, number> = {
-      "yes": 5,
-      "working": 3,
-      "not-yet": 0,
-    };
-    setAnswers(prev => ({ ...prev, [questionId]: scoreMap[value] }));
-    setIsSubmitted(false);
-  };
-
-  const handleSubmit = async () => {
-    setIsSubmitted(true);
-    setIsLoading(true);
-    setAiSuggestions([]);
-
-    try {
-      const { data, error } = await supabase.functions.invoke('accessibility-suggestions', {
-        body: { questions, answers }
-      });
-
-      if (error) {
-        console.error("Error getting suggestions:", error);
-        toast({
-          title: "Error",
-          description: "Failed to generate personalized suggestions. Please try again.",
-          variant: "destructive",
-        });
-      } else if (data?.suggestions) {
-        setAiSuggestions(data.suggestions);
-      }
-    } catch (error) {
-      console.error("Error:", error);
-      toast({
-        title: "Error",
-        description: "Failed to generate personalized suggestions. Please try again.",
-        variant: "destructive",
-      });
+  useEffect(() => {
+    const existing = document.querySelector<HTMLScriptElement>('script[src="https://tally.so/widgets/embed.js"]');
+    if (!existing) {
+      const script = document.createElement("script");
+      script.src = "https://tally.so/widgets/embed.js";
+      script.async = true;
+      document.body.appendChild(script);
+    } else {
+      // @ts-ignore
+      window.Tally?.loadEmbeds?.();
     }
-    
-    setIsLoading(false);
-  };
-
-  const handleEmailResults = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsSendingEmail(true);
-    try {
-      const { error } = await supabase.from('employer_results').insert([{
-        email,
-        score: percentageScore,
-        answers,
-        ai_suggestions: aiSuggestions,
-      }]);
-      if (error) throw error;
-      setEmailSent(true);
-      toast({
-        title: "Results saved!",
-        description: "We'll send your results to your inbox shortly.",
-      });
-    } catch (err) {
-      toast({
-        title: "Error",
-        description: "Failed to save your email. Please try again.",
-        variant: "destructive",
-      });
-    } finally {
-      setIsSendingEmail(false);
-    }
-  };
+  }, []);
 
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
 
