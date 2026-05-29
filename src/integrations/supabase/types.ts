@@ -21,7 +21,10 @@ export type Database = {
           created_at: string
           email: string
           id: string
+          max_score: number | null
+          percentage: number | null
           score: number
+          suggestions: Json | null
         }
         Insert: {
           ai_suggestions?: Json | null
@@ -29,7 +32,10 @@ export type Database = {
           created_at?: string
           email: string
           id?: string
+          max_score?: number | null
+          percentage?: number | null
           score: number
+          suggestions?: Json | null
         }
         Update: {
           ai_suggestions?: Json | null
@@ -37,7 +43,10 @@ export type Database = {
           created_at?: string
           email?: string
           id?: string
+          max_score?: number | null
+          percentage?: number | null
           score?: number
+          suggestions?: Json | null
         }
         Relationships: []
       }
