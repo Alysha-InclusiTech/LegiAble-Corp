@@ -1,58 +1,54 @@
 ## Goal
 
-Use answers from the embedded Tally form ("The Inclusion Check") to:
-1. Calculate a total Inclusion Score (Yes=5, Working on it=2, Not yet=0, max 45 → %)
-2. Match each answer to a suggestion from a table you'll provide
-3. Save score, answers, suggestions, and email to the database
+When someone submits the Tally "Inclusion Check", we score their answers, pick the 3 most relevant tips, save it, and email it.
 
-## Architecture
+## Flow
 
 ```text
-User fills Tally form ──► Tally webhook ──► Edge Function ──► employer_results table
-                                              │
-                                              ├─ compute score (5/2/0)
-                                              └─ look up suggestions in static map
+Tally form ─► tally-webhook edge function ─┬─► compute score (Yes=5, Working=2, Not yet=0)
+                                            ├─► pick top 3 tips
+                                            ├─► save to employer_results
+                                            └─► send email with score + 3 tips
 ```
 
-## Steps
+## Tip selection rule (your choice)
 
-### 1. Provide the suggestions table
-Send me a table in this shape (one row per question + answer):
+1. Collect every question answered **Not yet** in question order (Q1 → Q9).
+2. If fewer than 3, fill the remaining slots with **Working on it** tips picked **at random** from the remaining questions.
+3. **Yes** answers never generate a tip.
+4. Cap at 3.
 
-| Question ID / text | Answer (Yes / Working / Not yet) | Suggestion text |
-|---|---|---|
-| Q1 — Asked employees... | Not yet | "Send a 3-question pulse survey today..." |
-| Q1 — Asked employees... | Working on it | "..." |
-| ... | ... | ... |
+So if someone answers Not yet to Q2, Q5, Q7, Q8 → they get the Q2, Q5, Q7 tips (first three in order). If they answer Not yet to only Q5 and Working on it to Q1, Q3, Q9 → they get the Q5 tip plus 2 random tips from {Q1, Q3, Q9}.
 
-Easiest: 9 questions × 3 answers = up to 27 suggestions. You can leave "Yes" rows blank — those won't generate a suggestion.
+## What I need from you
 
-### 2. Tally form setup (you do this once)
-- In your Tally form, make sure each question's answer options are exactly: **Yes**, **Working on it**, **Not yet** (so we can map them reliably)
-- Add an **Email** field at the end of the form
-- After I deploy the webhook, I'll give you a URL to paste into Tally → Integrations → Webhooks
+**1. The suggestions table** — paste in chat in this exact shape:
 
-### 3. Database change
-Add a `suggestions` (jsonb) column to `employer_results` so we store the matched suggestions per submission. Existing `score`, `answers`, `email`, `ai_suggestions` columns stay.
+```
+Q# | Question short label | Answer (Not yet) tip | Working on it tip
+1  | Asked employees about needs | "Send a 3-question pulse survey today using..." | "Add one more question this week..."
+2  | ... | ... | ...
+...
+9  | ... | ... | ...
+```
 
-### 4. New edge function: `tally-webhook`
-- Public (no JWT), receives Tally's POST payload
-- Maps each question's answer → score (Yes=5, Working=2, Not yet=0)
-- Computes total + percentage (out of 45)
-- Looks up suggestions from the static table I'll embed in the function
-- Inserts a row into `employer_results` with email, score, answers, suggestions
+You can leave any cell blank — blanks are skipped.
 
-### 5. Frontend (`/employer`)
-- Keep the Tally embed as-is for the form
-- Replace the old AI-suggestion path
-- After Tally submission, show a "Thanks — your results have been emailed" confirmation (Tally fires a `Tally.FormSubmitted` postMessage we can listen to)
-- Optional: add an admin-only results view later
+**2. Tally field IDs** — once your form is final, I'll need the question→field mapping from a test webhook payload. I can fetch it after you wire the webhook URL, or you can paste one sample Tally POST and I'll map it.
 
-### 6. Score display
-Two options — pick one:
-- **A.** Don't show the score on the page; only email it (current direction)
-- **B.** After submission, fetch the latest result for that email and display the score + matched suggestions on the page
+**3. Email** — confirm: send from the existing email setup, subject "Your Inclusion Check results", body = score (e.g. "28 / 45 — 62%") + the 3 tips as a bulleted list. Yes or change?
 
-## Open question for you
+## What I'll build (once you send the table)
 
-Once you send the suggestions table and confirm the answer labels in Tally, I'll wire it all up. Also let me know A or B for the score display.
+1. **DB migration**: add `suggestions jsonb` and `percentage int` columns to `employer_results`.
+2. **Edge function `tally-webhook`** (public, no JWT):
+   - Parses Tally payload
+   - Maps each answer to score 5/2/0
+   - Computes total + percentage
+   - Runs the tip-selection rule above against the embedded suggestions table
+   - Inserts row into `employer_results`
+   - Sends email to the submitter
+3. **Frontend `/employer`**: keep the Tally embed; listen for `Tally.FormSubmitted` postMessage and show a "Check your inbox" confirmation.
+4. **Give you the webhook URL** to paste into Tally → Integrations → Webhooks.
+
+Send the suggestions table and I'll build it in one pass.
