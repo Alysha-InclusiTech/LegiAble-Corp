@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye } from "lucide-react";
+import { Eye, CheckCircle2 } from "lucide-react";
 
 const EmployerPortal = () => {
   const [showEmpathyView, setShowEmpathyView] = useState(false);
+  const [submitted, setSubmitted] = useState(false);
 
   useEffect(() => {
     const existing = document.querySelector<HTMLScriptElement>('script[src="https://tally.so/widgets/embed.js"]');
@@ -17,6 +18,16 @@ const EmployerPortal = () => {
       // @ts-ignore
       window.Tally?.loadEmbeds?.();
     }
+
+    const onMessage = (e: MessageEvent) => {
+      if (typeof e.data === "string" && e.data.includes("Tally.FormSubmitted")) {
+        setSubmitted(true);
+      } else if (e.data?.event === "Tally.FormSubmitted") {
+        setSubmitted(true);
+      }
+    };
+    window.addEventListener("message", onMessage);
+    return () => window.removeEventListener("message", onMessage);
   }, []);
 
   const sampleText = "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line. This simulation helps you understand the daily experience.";
