@@ -1,125 +1,46 @@
-import { useNavigate } from "react-router-dom";
+import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Card } from "@/components/ui/card";
-import { BookOpen, Briefcase, Eye } from "lucide-react";
 import legiableLogo from "@/assets/legiable-logo.png";
 
 const Index = () => {
-  const navigate = useNavigate();
-
   return (
-    <div className="min-h-screen bg-background">
-      {/* Hero Section */}
+    <div className="min-h-screen bg-background flex flex-col">
       <header className="border-b border-border/40 bg-background">
-        <div className="max-w-6xl mx-auto px-4 py-5">
+        <div className="max-w-6xl mx-auto px-4 py-5 flex items-center justify-between">
           <div className="flex items-center gap-2">
-            <div className="h-12 w-12 rounded-md flex items-center justify-center">
-              <img src={legiableLogo} alt="LegiAble Logo" className="h-12 w-12" />
-            </div>
+            <img src={legiableLogo} alt="LegiAble" className="h-12 w-12" />
             <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-foreground">LegiAble</h1>
+              <h1 className="text-2xl font-semibold tracking-tight">LegiAble</h1>
               <p className="text-xs text-muted-foreground font-medium tracking-wide">BY INCLUSITECH</p>
             </div>
           </div>
+          <Button asChild variant="outline" size="sm">
+            <Link to="/login">Sign in</Link>
+          </Button>
         </div>
       </header>
 
-      <main className="max-w-6xl mx-auto px-4 py-12 md:py-20">
-        {/* Hero Content */}
-        <div className="text-center mb-16">
-          <h2 className="text-4xl md:text-5xl font-bold text-foreground mb-4">
-            Making Inclusion Practical and Human
-          </h2>
-          <p className="text-xl text-muted-foreground max-w-2xl mx-auto mb-6">
-            Empowering people with dyslexia and supporting organizations in creating inclusive environments at work, in schools and beyond
+      <main className="flex-1 flex items-center">
+        <div className="max-w-3xl mx-auto px-4 py-20 text-center space-y-6">
+          <h2 className="text-4xl md:text-5xl font-bold">Making inclusion practical and human</h2>
+          <p className="text-xl text-muted-foreground">
+            LegiAble is currently in private pilot with selected organisations. Get in touch to license the
+            Employee Reader and Employer Toolkit for your team.
           </p>
-          
-        </div>
-
-        {/* Two-Path Selection */}
-        <div className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto">
-          {/* Employee Path */}
-          <Card 
-            className="p-8 hover:shadow-lg transition-shadow cursor-pointer group"
-            onClick={() => navigate("/employee")}
-          >
-            <div className="flex flex-col items-center text-center">
-              <div className="h-20 w-20 bg-primary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-primary/20 transition-colors">
-                <BookOpen className="h-10 w-10 text-primary" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-3">I have Dyslexia</h3>
-              <p className="text-muted-foreground mb-6">
-                Upload images with text using OCR technology to convert to dyslexic-friendly fonts with a reading ruler to aid people with dyslexia or ADHD
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-2 mb-6 text-left">
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  OCR text extraction
-                </li>
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  OpenDyslexic font rendering
-                </li>
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  Interactive reading ruler
-                </li>
-              </ul>
-              <Button className="w-full" size="lg">
-                Open Reader
-              </Button>
-            </div>
-          </Card>
-
-          {/* Employer Path */}
-          <Card 
-            className="p-8 hover:shadow-lg transition-shadow cursor-pointer group"
-            onClick={() => navigate("/employer")}
-          >
-            <div className="flex flex-col items-center text-center">
-              <div className="h-20 w-20 bg-secondary/10 rounded-full flex items-center justify-center mb-6 group-hover:bg-secondary/20 transition-colors">
-                <Briefcase className="h-10 w-10 text-secondary" />
-              </div>
-              <h3 className="text-2xl font-semibold mb-3">I'm an Employer</h3>
-              <p className="text-muted-foreground mb-6">
-                Learn how to create an inclusive workplace with our accessibility checklist and empathy tools
-              </p>
-              <ul className="text-sm text-muted-foreground space-y-2 mb-6 text-left">
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  Empathy preview mode
-                </li>
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  Accessibility checklist
-                </li>
-                <li className="flex items-center gap-2">
-                  <Eye className="h-4 w-4 text-accent" />
-                  Best practices guide
-                </li>
-              </ul>
-              <Button variant="secondary" className="w-full" size="lg">
-                Explore Toolkit
-              </Button>
-            </div>
-          </Card>
-        </div>
-
-        {/* Info Section */}
-        <div className="mt-20 text-center max-w-3xl mx-auto">
-          <h3 className="text-2xl font-semibold mb-4">About Dyslexia</h3>
-          <p className="text-muted-foreground leading-relaxed">
-            Dyslexia affects approximately 10-15% of the population, yet many workplaces and schools lack proper 
-            accommodations. LegiAble bridges this gap by providing accessible reading tools for people with dyslexia 
-            and educational resources for employers to create truly inclusive environments.
-          </p>
+          <div className="flex gap-3 justify-center pt-4">
+            <Button asChild size="lg">
+              <a href="mailto:hello@legiable.com?subject=LegiAble%20pilot%20enquiry">Request pilot access</a>
+            </Button>
+            <Button asChild variant="outline" size="lg">
+              <Link to="/login">Sign in</Link>
+            </Button>
+          </div>
         </div>
       </main>
 
-      {/* Footer */}
-      <footer className="border-t border-border mt-20">
+      <footer className="border-t border-border">
         <div className="max-w-6xl mx-auto px-4 py-8 text-center text-sm text-muted-foreground">
-          <p>© 2025 InclusiTech. Building accessible solutions for everyone.</p>
+          © 2025 InclusiTech. Building accessible solutions for everyone.
         </div>
       </footer>
     </div>

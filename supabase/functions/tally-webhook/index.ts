@@ -169,7 +169,30 @@ Deno.serve(async (req) => {
   if (req.method === "OPTIONS") return new Response(null, { headers: corsHeaders });
 
   try {
-    const payload = await req.json();
+    const rawBody = await req.text();
+
+    // Optional Tally signature verification — enforced only when TALLY_SIGNING_SECRET is set.
+    const signingSecret = Deno.env.get("TALLY_SIGNING_SECRET");
+    if (signingSecret) {
+      const sigHeader = req.headers.get("tally-signature") ?? "";
+      const key = await crypto.subtle.importKey(
+        "raw",
+        new TextEncoder().encode(signingSecret),
+        { name: "HMAC", hash: "SHA-256" },
+        false,
+        ["sign"],
+      );
+      const macBuf = await crypto.subtle.sign("HMAC", key, new TextEncoder().encode(rawBody));
+      const expected = btoa(String.fromCharCode(...new Uint8Array(macBuf)));
+      if (sigHeader !== expected) {
+        console.warn("Invalid Tally signature");
+        return new Response(JSON.stringify({ error: "Invalid signature" }), {
+          status: 401, headers: { ...corsHeaders, "Content-Type": "application/json" },
+        });
+      }
+    }
+
+    const payload = JSON.parse(rawBody);
     const fields: any[] = payload?.data?.fields ?? [];
     if (!Array.isArray(fields) || !fields.length) {
       return new Response(JSON.stringify({ error: "No fields in payload" }), {

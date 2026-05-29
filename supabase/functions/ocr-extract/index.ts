@@ -17,6 +17,7 @@ serve(async (req) => {
       throw new Error('No image data provided');
     }
 
+    // EXPORT: replace LOVABLE_API_KEY with GEMINI_API_KEY and switch endpoint below to direct Gemini API.
     const LOVABLE_API_KEY = Deno.env.get('LOVABLE_API_KEY');
     if (!LOVABLE_API_KEY) {
       throw new Error('LOVABLE_API_KEY is not configured');
