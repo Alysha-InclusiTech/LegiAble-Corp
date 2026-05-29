@@ -50,6 +50,42 @@ export type Database = {
         }
         Relationships: []
       }
+      licenses: {
+        Row: {
+          company_name: string
+          created_at: string
+          expires_at: string | null
+          id: string
+          is_active: boolean
+          notes: string | null
+          plan: Database["public"]["Enums"]["license_plan"]
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          company_name: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          plan?: Database["public"]["Enums"]["license_plan"]
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          company_name?: string
+          created_at?: string
+          expires_at?: string | null
+          id?: string
+          is_active?: boolean
+          notes?: string | null
+          plan?: Database["public"]["Enums"]["license_plan"]
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       user_roles: {
         Row: {
           created_at: string | null
@@ -100,6 +136,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      has_active_license: { Args: { _user_id: string }; Returns: boolean }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
@@ -110,6 +147,7 @@ export type Database = {
     }
     Enums: {
       app_role: "admin" | "user"
+      license_plan: "pilot" | "license"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -238,6 +276,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["admin", "user"],
+      license_plan: ["pilot", "license"],
     },
   },
 } as const
