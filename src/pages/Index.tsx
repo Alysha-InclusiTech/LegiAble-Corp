@@ -55,7 +55,7 @@ const Index = () => {
         </p>
         <div className="mt-10 flex flex-col sm:flex-row gap-3 justify-center">
           <Button asChild size="lg" className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8">
-            <a href="mailto:hello@legiable.com?subject=LegiAble%20pilot%20enquiry">Request pilot access →</a>
+            <a href="mailto:alysha@inclusitech.com?subject=LegiAble%20pilot%20enquiry">Request pilot access →</a>
           </Button>
           <Button asChild size="lg" variant="outline" className="rounded-full px-8 border-gray-300 text-gray-700 hover:bg-gray-50">
             <Link to="/login">Sign in</Link>
@@ -89,7 +89,7 @@ const Index = () => {
         <h2 className="text-3xl font-bold text-gray-900 mb-4">Ready to start your pilot?</h2>
         <p className="text-gray-500 mb-8 max-w-md mx-auto">Get in touch and we'll set up your organisation within 48 hours.</p>
         <Button asChild size="lg" className="bg-gray-900 hover:bg-gray-800 text-white rounded-full px-8">
-          <a href="mailto:hello@legiable.com?subject=LegiAble%20pilot%20enquiry">Get in touch →</a>
+          <a href="mailto:alysha@inclusitech.com?subject=LegiAble%20pilot%20enquiry">Get in touch →</a>
         </Button>
       </section>
 
