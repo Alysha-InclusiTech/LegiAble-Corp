@@ -150,13 +150,11 @@ export default function EmployerPortal() {
   };
 
   const handleSubmit = () => {
-    // Score: yes = 2, working-on-it = 1, not-yet = 0
-    const scoreMap: Record<string, number> = { yes: 2, "working-on-it": 1, "not-yet": 0 };
+    const scoreMap: Record<string, number> = { yes: 3, "working-on-it": 2, "not-yet": 0 };
     const total = answers.reduce((sum, a) => sum + (a ? scoreMap[a] : 0), 0);
-    const max = questions.length * 2;
+    const max = questions.length * 3;
     setScore(Math.round((total / max) * 100));
 
-    // Collect tips for all non-yes answers, prioritising not-yet
     const notYetTips = answers
       .map((a, i) => (a === "not-yet" ? questions[i].tips["not-yet"] : null))
       .filter(Boolean) as string[];
@@ -307,7 +305,6 @@ export default function EmployerPortal() {
               </div>
             ) : (
               <div className="space-y-6 mt-4">
-                {/* Progress */}
                 <div>
                   <div className="flex justify-between text-xs text-gray-400 mb-2">
                     <span>Question {currentQ + 1} of {questions.length}</span>
@@ -321,25 +318,22 @@ export default function EmployerPortal() {
                   </div>
                 </div>
 
-                {/* Question */}
                 <p className="text-base font-medium text-gray-900 leading-relaxed min-h-[60px]">
                   {questions[currentQ].text}
                 </p>
 
-                {/* Options */}
                 <div className="space-y-2">
-                  <button className={optionStyle("not-yet")} onClick={() => handleAnswer("not-yet")}>
-                    Not yet
+                  <button className={optionStyle("yes")} onClick={() => handleAnswer("yes")}>
+                    Yes
                   </button>
                   <button className={optionStyle("working-on-it")} onClick={() => handleAnswer("working-on-it")}>
                     Working on it
                   </button>
-                  <button className={optionStyle("yes")} onClick={() => handleAnswer("yes")}>
-                    Yes
+                  <button className={optionStyle("not-yet")} onClick={() => handleAnswer("not-yet")}>
+                    Not yet
                   </button>
                 </div>
 
-                {/* Navigation */}
                 <div className="flex justify-between pt-2">
                   <Button
                     variant="outline"
