@@ -210,28 +210,16 @@ export default function Account() {
             </Card>
           </div>
         )}
-
-        {/* Inactive state */}
-        {!active && (
-          <Card className="p-6 bg-white border-gray-100">
-            <h2 className="font-semibold mb-3">Pilot status</h2>
-            {license ? (
-              <div className="space-y-2 text-sm">
-                <div><span className="text-muted-foreground">Company:</span> {license.company_name}</div>
-                <div><span className="text-muted-foreground">Plan:</span> {license.plan}</div>
-                <div>
-                  <span className="text-muted-foreground">Status:</span>{" "}
-                  <span className="text-destructive font-medium">Inactive</span>
-                </div>
-              </div>
-            ) : (
-              <p className="text-sm text-muted-foreground">
-                No license on file yet. Contact us to start your pilot.
-              </p>
-            )}
-          </Card>
-        )}
-      </main>
+{!active && license && (
+  <Card className="p-6 bg-white border-gray-100">
+    <h2 className="font-semibold mb-3">Pilot status</h2>
+    <div className="space-y-2 text-sm">
+      <div><span className="text-muted-foreground">Company:</span> {license.company_name}</div>
+      <div><span className="text-muted-foreground">Plan:</span> {license.plan}</div>
+      <div>
+        <span className="text-muted-foreground">Status:</span>{" "}
+        <span className="text-destructive font-medium">Inactive — contact us to renew</span>
+      </div>
     </div>
-  );
-}
+  </Card>
+)}
