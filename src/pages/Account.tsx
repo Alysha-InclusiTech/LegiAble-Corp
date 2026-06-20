@@ -8,7 +8,6 @@ import { useLicense } from "@/hooks/useLicense";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { LayoutDashboard, Briefcase, Settings, LogOut, ShieldCheck } from "lucide-react";
 
-// Placeholder — swap for real Supabase query once form responses are wired up
 const weeklyData = {
   week: 1,
   score: 74,
@@ -43,7 +42,8 @@ export default function Account() {
     year: "numeric",
   });
 
-  const firstName = user.email?.split("@")[0] ?? "there";
+  const rawName = user.email?.split("@")[0] ?? "there";
+  const firstName = rawName.charAt(0).toUpperCase() + rawName.slice(1);
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
@@ -154,7 +154,6 @@ export default function Account() {
         {/* Score + tips */}
         {active && (
           <div className="grid grid-cols-2 gap-6">
-            {/* Score breakdown */}
             <Card className="p-6 bg-white border-gray-100">
               <h2 className="font-semibold text-gray-900 mb-1">Inclusion Score</h2>
               <p className="text-xs text-muted-foreground mb-5">
@@ -176,7 +175,6 @@ export default function Account() {
               </div>
             </Card>
 
-            {/* Weekly tips */}
             <Card className="p-6 bg-white border-gray-100">
               <h2 className="font-semibold text-gray-900 mb-1">This week's actions</h2>
               <p className="text-xs text-muted-foreground mb-5">
@@ -194,7 +192,7 @@ export default function Account() {
                       id={`tip-${i}`}
                       checked={checked[i]}
                       onCheckedChange={() => toggle(i)}
-                      className="mt-0.5"
+                      className="mt-0.5 rounded-full border-gray-300 data-[state=checked]:bg-gray-900 data-[state=checked]:border-gray-900"
                     />
                     <label
                       htmlFor={`tip-${i}`}
@@ -211,7 +209,7 @@ export default function Account() {
           </div>
         )}
 
-               {/* Inactive state */}
+        {/* Inactive state */}
         {!active && license && (
           <Card className="p-6 bg-white border-gray-100">
             <h2 className="font-semibold mb-3">Pilot status</h2>
