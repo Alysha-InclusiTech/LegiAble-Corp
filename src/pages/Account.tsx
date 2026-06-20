@@ -210,6 +210,8 @@ export default function Account() {
             </Card>
           </div>
         )}
+
+       {/* Inactive state */}
 {!active && license && (
   <Card className="p-6 bg-white border-gray-100">
     <h2 className="font-semibold mb-3">Pilot status</h2>
@@ -223,3 +225,6 @@ export default function Account() {
     </div>
   </Card>
 )}
+    </div>
+  );
+}
