@@ -63,7 +63,6 @@ export default function Account() {
 
   return (
     <div className="min-h-screen bg-gray-50 flex">
-      {/* Sidebar */}
       <aside className="w-56 bg-white border-r border-gray-100 flex flex-col py-8 px-4 shrink-0">
         <div className="mb-10 px-2">
           <span className="text-lg font-bold tracking-tight text-gray-900">LegiAble</span>
@@ -93,6 +92,7 @@ export default function Account() {
           )}
         </nav>
 
+        <div className="flex flex-col gap-1 mt-4">
           <button
             onClick={() => supabase.auth.signOut().then(() => navigate("/login"))}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors w-full text-left"
@@ -103,9 +103,7 @@ export default function Account() {
         </div>
       </aside>
 
-      {/* Main content */}
       <main className="flex-1 p-8 overflow-y-auto">
-        {/* Greeting */}
         <div className="mb-8 flex items-start justify-between">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Hello, {firstName}</h1>
@@ -120,7 +118,6 @@ export default function Account() {
           <span className="text-sm text-gray-400 mt-1">{today}</span>
         </div>
 
-        {/* Stat cards */}
         <div className="grid grid-cols-4 gap-4 mb-8">
           <Card className="p-5 bg-white border-gray-100">
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Latest check</p>
@@ -150,10 +147,7 @@ export default function Account() {
             {license?.expires_at ? (
               <>
                 <p className="text-2xl font-bold text-gray-900 mt-1">
-                  {new Date(license.expires_at).toLocaleDateString("en-GB", {
-                    day: "numeric",
-                    month: "short",
-                  })}
+                  {new Date(license.expires_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
                 </p>
                 <p className="text-sm text-gray-400 mt-1">
                   {new Date(license.expires_at).getFullYear()}
@@ -170,7 +164,6 @@ export default function Account() {
           </Card>
         </div>
 
-        {/* Score + tips */}
         {active && (
           <div className="grid grid-cols-2 gap-6">
             <Card className="p-6 bg-white border-gray-100">
@@ -216,10 +209,7 @@ export default function Account() {
               ) : (
                 <div className="space-y-3">
                   {tips.map((tip, i) => (
-                    <div
-                      key={i}
-                      className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50"
-                    >
+                    <div key={i} className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50">
                       <Checkbox
                         id={`tip-${i}`}
                         checked={checked[i] ?? false}
@@ -242,7 +232,6 @@ export default function Account() {
           </div>
         )}
 
-        {/* Inactive state */}
         {!active && license && (
           <Card className="p-6 bg-white border-gray-100">
             <h2 className="font-semibold mb-3">Pilot status</h2>
@@ -256,7 +245,6 @@ export default function Account() {
             </div>
           </Card>
         )}
-
       </main>
     </div>
   );
