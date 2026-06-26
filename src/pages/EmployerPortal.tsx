@@ -2,6 +2,8 @@ import { useState } from "react";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Eye, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
 type Answer = "not-yet" | "working-on-it" | "yes" | null;
 
@@ -136,6 +138,7 @@ const sampleText =
   "Reading with dyslexia can be challenging. Letters may appear to move or swap positions. Words can blur together, making it difficult to focus on a single line.";
 
 export default function EmployerPortal() {
+  const { user } = useAuth();
   const [showEmpathyView, setShowEmpathyView] = useState(false);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>(Array(questions.length).fill(null));
@@ -149,11 +152,12 @@ export default function EmployerPortal() {
     setAnswers(updated);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const scoreMap: Record<string, number> = { yes: 3, "working-on-it": 2, "not-yet": 0 };
     const total = answers.reduce((sum, a) => sum + (a ? scoreMap[a] : 0), 0);
     const max = questions.length * 3;
-    setScore(Math.round((total / max) * 100));
+    const computedScore = Math.round((total / max) * 100);
+    setScore(computedScore);
 
     const notYetTips = answers
       .map((a, i) => (a === "not-yet" ? questions[i].tips["not-yet"] : null))
@@ -162,8 +166,18 @@ export default function EmployerPortal() {
       .map((a, i) => (a === "working-on-it" ? questions[i].tips["working-on-it"] : null))
       .filter(Boolean) as string[];
 
-    setTips([...notYetTips, ...workingTips].slice(0, 3));
+    const computedTips = [...notYetTips, ...workingTips].slice(0, 3);
+    setTips(computedTips);
     setSubmitted(true);
+
+    if (user) {
+      await supabase.from("inclusion_checks").insert({
+        user_id: user.id,
+        score: computedScore,
+        answers: answers as unknown as Record<string, unknown>[],
+        tips: computedTips,
+      });
+    }
   };
 
   const progress = ((currentQ + 1) / questions.length) * 100;
