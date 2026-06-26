@@ -6,7 +6,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { useAuth } from "@/hooks/useAuth";
 import { useLicense } from "@/hooks/useLicense";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
-import { LayoutDashboard, Briefcase, Settings, LogOut, ShieldCheck } from "lucide-react";
+import { LayoutDashboard, Briefcase, LogOut, ShieldCheck } from "lucide-react";
 
 type InclusionCheck = {
   score: number;
@@ -93,11 +93,6 @@ export default function Account() {
           )}
         </nav>
 
-        <div className="flex flex-col gap-1 mt-4">
-          <button className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors w-full text-left">
-            <Settings className="h-4 w-4" />
-            Settings
-          </button>
           <button
             onClick={() => supabase.auth.signOut().then(() => navigate("/login"))}
             className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors w-full text-left"
