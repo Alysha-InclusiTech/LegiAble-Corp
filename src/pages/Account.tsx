@@ -8,14 +8,10 @@ import { useLicense } from "@/hooks/useLicense";
 import { useIsAdmin } from "@/hooks/useIsAdmin";
 import { LayoutDashboard, Briefcase, Settings, LogOut, ShieldCheck } from "lucide-react";
 
-const weeklyData = {
-  week: 1,
-  score: 74,
-  tips: [
-    "Send meeting agendas at least 24 hours in advance so team members can prepare.",
-    "Check in 1:1 with any team member who hasn't spoken up in group settings this week.",
-    "Review one document your team uses regularly — increase font size and line spacing.",
-  ],
+type InclusionCheck = {
+  score: number;
+  tips: string[];
+  created_at: string;
 };
 
 export default function Account() {
@@ -23,17 +19,37 @@ export default function Account() {
   const { user, loading } = useAuth();
   const { license, active } = useLicense();
   const { isAdmin } = useIsAdmin();
-  const [checked, setChecked] = useState<boolean[]>(weeklyData.tips.map(() => false));
+  const [latestCheck, setLatestCheck] = useState<InclusionCheck | null>(null);
+  const [checked, setChecked] = useState<boolean[]>([]);
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
   }, [user, loading, navigate]);
+
+  useEffect(() => {
+    if (!user) return;
+    supabase
+      .from("inclusion_checks")
+      .select("score, tips, created_at")
+      .eq("user_id", user.id)
+      .order("created_at", { ascending: false })
+      .limit(1)
+      .single()
+      .then(({ data }) => {
+        if (data) {
+          const tips = Array.isArray(data.tips) ? (data.tips as string[]) : [];
+          setLatestCheck({ score: data.score, tips, created_at: data.created_at });
+          setChecked(tips.map(() => false));
+        }
+      });
+  }, [user]);
 
   if (!user) return null;
 
   const toggle = (i: number) =>
     setChecked((prev) => prev.map((v, idx) => (idx === i ? !v : v)));
 
+  const tips = latestCheck?.tips ?? [];
   const completedCount = checked.filter(Boolean).length;
 
   const today = new Date().toLocaleDateString("en-GB", {
@@ -100,7 +116,9 @@ export default function Account() {
             <h1 className="text-3xl font-bold text-gray-900">Hello, {firstName}</h1>
             <p className="text-gray-400 mt-1 text-sm">
               {active
-                ? `Week ${weeklyData.week} of 4 — keep going!`
+                ? latestCheck
+                  ? `Last check: ${new Date(latestCheck.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long" })} — keep going!`
+                  : "Complete the Inclusion Check to see your score."
                 : "Your pilot isn't active yet. Contact us to get started."}
             </p>
           </div>
@@ -110,19 +128,25 @@ export default function Account() {
         {/* Stat cards */}
         <div className="grid grid-cols-4 gap-4 mb-8">
           <Card className="p-5 bg-white border-gray-100">
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Pilot week</p>
-            <p className="text-4xl font-bold text-gray-900">{weeklyData.week}</p>
-            <p className="text-sm text-gray-400 mt-1">of 4 weeks</p>
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Latest check</p>
+            <p className="text-4xl font-bold text-gray-900">
+              {latestCheck
+                ? new Date(latestCheck.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short" })
+                : "—"}
+            </p>
+            <p className="text-sm text-gray-400 mt-1">
+              {latestCheck ? new Date(latestCheck.created_at).getFullYear() : "No check yet"}
+            </p>
           </Card>
           <Card className="p-5 bg-white border-gray-100">
-            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">This week's score</p>
-            <p className="text-4xl font-bold text-gray-900">{weeklyData.score}</p>
+            <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Inclusion score</p>
+            <p className="text-4xl font-bold text-gray-900">{latestCheck?.score ?? "—"}</p>
             <p className="text-sm text-gray-400 mt-1">out of 100</p>
           </Card>
           <Card className="p-5 bg-white border-gray-100">
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">Actions done</p>
             <p className="text-4xl font-bold text-gray-900">{completedCount}</p>
-            <p className="text-sm text-gray-400 mt-1">of {weeklyData.tips.length} this week</p>
+            <p className="text-sm text-gray-400 mt-1">of {tips.length} this week</p>
           </Card>
           <Card className="p-5 bg-white border-gray-100">
             <p className="text-xs text-gray-400 font-medium uppercase tracking-wider mb-2">
@@ -157,54 +181,68 @@ export default function Account() {
             <Card className="p-6 bg-white border-gray-100">
               <h2 className="font-semibold text-gray-900 mb-1">Inclusion Score</h2>
               <p className="text-xs text-muted-foreground mb-5">
-                Week {weeklyData.week} · based on your Inclusion Check
+                {latestCheck
+                  ? `Last check · ${new Date(latestCheck.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "long", year: "numeric" })}`
+                  : "Complete the Inclusion Check to see your score"}
               </p>
-              <div className="flex items-end gap-3 mb-4">
-                <span className="text-5xl font-bold text-gray-900">{weeklyData.score}</span>
-                <span className="text-gray-400 mb-1">/ 100</span>
-              </div>
-              <div className="w-full bg-gray-100 rounded-full h-2">
-                <div
-                  className="bg-gray-900 h-2 rounded-full transition-all duration-500"
-                  style={{ width: `${weeklyData.score}%` }}
-                />
-              </div>
-              <div className="flex justify-between text-xs text-gray-400 mt-2">
-                <span>0</span>
-                <span>100</span>
-              </div>
+              {latestCheck ? (
+                <>
+                  <div className="flex items-end gap-3 mb-4">
+                    <span className="text-5xl font-bold text-gray-900">{latestCheck.score}</span>
+                    <span className="text-gray-400 mb-1">/ 100</span>
+                  </div>
+                  <div className="w-full bg-gray-100 rounded-full h-2">
+                    <div
+                      className="bg-gray-900 h-2 rounded-full transition-all duration-500"
+                      style={{ width: `${latestCheck.score}%` }}
+                    />
+                  </div>
+                  <div className="flex justify-between text-xs text-gray-400 mt-2">
+                    <span>0</span>
+                    <span>100</span>
+                  </div>
+                </>
+              ) : (
+                <p className="text-sm text-gray-400">No data yet — take the Inclusion Check in the Employer Toolkit.</p>
+              )}
             </Card>
 
             <Card className="p-6 bg-white border-gray-100">
               <h2 className="font-semibold text-gray-900 mb-1">This week's actions</h2>
               <p className="text-xs text-muted-foreground mb-5">
-                {completedCount === weeklyData.tips.length
+                {tips.length === 0
+                  ? "No actions yet"
+                  : completedCount === tips.length
                   ? "All done — great work this week!"
-                  : `${weeklyData.tips.length - completedCount} remaining`}
+                  : `${tips.length - completedCount} remaining`}
               </p>
-              <div className="space-y-3">
-                {weeklyData.tips.map((tip, i) => (
-                  <div
-                    key={i}
-                    className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50"
-                  >
-                    <Checkbox
-                      id={`tip-${i}`}
-                      checked={checked[i]}
-                      onCheckedChange={() => toggle(i)}
-                      className="mt-0.5 rounded-full border-gray-300 data-[state=checked]:bg-gray-900 data-[state=checked]:border-gray-900"
-                    />
-                    <label
-                      htmlFor={`tip-${i}`}
-                      className={`text-sm leading-relaxed cursor-pointer ${
-                        checked[i] ? "line-through text-gray-400" : "text-gray-700"
-                      }`}
+              {tips.length === 0 ? (
+                <p className="text-sm text-gray-400">Complete the Inclusion Check to get personalised actions.</p>
+              ) : (
+                <div className="space-y-3">
+                  {tips.map((tip, i) => (
+                    <div
+                      key={i}
+                      className="flex items-start gap-3 p-3 rounded-xl border border-gray-100 bg-gray-50"
                     >
-                      {tip}
-                    </label>
-                  </div>
-                ))}
-              </div>
+                      <Checkbox
+                        id={`tip-${i}`}
+                        checked={checked[i] ?? false}
+                        onCheckedChange={() => toggle(i)}
+                        className="mt-0.5 rounded-full border-gray-300 data-[state=checked]:bg-gray-900 data-[state=checked]:border-gray-900"
+                      />
+                      <label
+                        htmlFor={`tip-${i}`}
+                        className={`text-sm leading-relaxed cursor-pointer ${
+                          checked[i] ? "line-through text-gray-400" : "text-gray-700"
+                        }`}
+                      >
+                        {tip}
+                      </label>
+                    </div>
+                  ))}
+                </div>
+              )}
             </Card>
           </div>
         )}
