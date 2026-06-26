@@ -1,9 +1,11 @@
 import { useState } from "react";
+import { Link, useNavigate } from "react-router-dom";
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { Eye, CheckCircle2, ChevronRight, ChevronLeft } from "lucide-react";
+import { Eye, CheckCircle2, ChevronRight, ChevronLeft, LayoutDashboard, Briefcase, Settings, LogOut, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { useIsAdmin } from "@/hooks/useIsAdmin";
 
 type Answer = "not-yet" | "working-on-it" | "yes" | null;
 
@@ -16,120 +18,96 @@ const questions: {
     id: 1,
     text: "Have you asked employees what helps them work best in the last 6 months?",
     tips: {
-      "not-yet":
-        "Book a 15-minute 1-on-1 with an employee this week. Ask: 'What's one thing I could change about how we communicate that would help you work better?'",
-      "working-on-it":
-        "After your next 1-on-1, write down one thing you'll change and share it back with that employee.",
+      "not-yet": "Book a 15-minute 1-on-1 with an employee this week. Ask: 'What's one thing I could change about how we communicate that would help you work better?'",
+      "working-on-it": "After your next 1-on-1, write down one thing you'll change and share it back with that employee.",
     },
   },
   {
     id: 2,
     text: "Have you acted on at least one piece of accessibility feedback you have received?",
     tips: {
-      "not-yet":
-        "Take 15 minutes to create a document where you can write any accessibility feedback you receive from now on.",
-      "working-on-it":
-        "Take one piece of feedback from your log and write down the specific change you'll make and who's responsible.",
+      "not-yet": "Take 15 minutes to create a document where you can write any accessibility feedback you receive from now on.",
+      "working-on-it": "Take one piece of feedback from your log and write down the specific change you'll make and who's responsible.",
     },
   },
   {
     id: 3,
     text: "Is your language clear, simple, and free of jargon or acronyms?",
     tips: {
-      "not-yet":
-        "Pick your last internal email and highlight every word that only makes sense if you already work there. That's your jargon list.",
-      "working-on-it":
-        "Before sending your next three internal messages, paste them into Hemingway App to check the readability score.",
+      "not-yet": "Pick your last internal email and highlight every word that only makes sense if you already work there. That's your jargon list.",
+      "working-on-it": "Before sending your next three internal messages, paste them into Hemingway App to check the readability score.",
     },
   },
   {
     id: 4,
     text: "Do you include a short summary for internal messages longer than 3 paragraphs?",
     tips: {
-      "not-yet":
-        "Before you send your next internal message, check if it's more than 3 paragraphs — if it is, add at least a 3 bullet point summary.",
-      "working-on-it":
-        "For your next internal message, create the summary section before you start writing the main sections.",
+      "not-yet": "Before you send your next internal message, check if it's more than 3 paragraphs — if it is, add at least a 3 bullet point summary.",
+      "working-on-it": "For your next internal message, create the summary section before you start writing the main sections.",
     },
   },
   {
     id: 5,
     text: "Do you use formatting (bullet points, short paragraphs, white space) to make documents easier to read?",
     tips: {
-      "not-yet":
-        "Open your last company-wide document and take a look at the formatting. Make note of how you normally structure documents.",
-      "working-on-it":
-        "Open one company-wide document. Break paragraphs into 2–3 sentences max, and add white space between sections.",
+      "not-yet": "Open your last company-wide document and take a look at the formatting. Make note of how you normally structure documents.",
+      "working-on-it": "Open one company-wide document. Break paragraphs into 2–3 sentences max, and add white space between sections.",
     },
   },
   {
     id: 6,
     text: "Do you share documents in editable formats employees can adjust (Word or Google Docs)?",
     tips: {
-      "not-yet":
-        "Find one document in PDF format and copy it into Google Docs. Make sure that everyone has edit access.",
-      "working-on-it":
-        "Set a reminder on your calendar for the first Monday of every month: 'Check — are all shared documents in editable format?'",
+      "not-yet": "Find one document in PDF format and copy it into Google Docs. Make sure that everyone has edit access.",
+      "working-on-it": "Set a reminder on your calendar for the first Monday of every month: 'Check — are all shared documents in editable format?'",
     },
   },
   {
     id: 7,
     text: "Do you share agendas at least 24 hours before meetings?",
     tips: {
-      "not-yet":
-        "Send a company-wide email saying that from now on you will be sharing the meeting agenda 24 hours in advance.",
-      "working-on-it":
-        "Schedule a recurring 10-minute calendar block every Friday to draft agendas for the following week's meetings.",
+      "not-yet": "Send a company-wide email saying that from now on you will be sharing the meeting agenda 24 hours in advance.",
+      "working-on-it": "Schedule a recurring 10-minute calendar block every Friday to draft agendas for the following week's meetings.",
     },
   },
   {
     id: 8,
     text: "Do you offer async options (recorded updates, written summaries) so people can contribute at their best?",
     tips: {
-      "not-yet":
-        "On your next video call, press record and share the recording with participants after the meeting has concluded.",
-      "working-on-it":
-        "Input the video transcription into a summariser to receive a written summary of the meeting to share with the team.",
+      "not-yet": "On your next video call, press record and share the recording with participants after the meeting has concluded.",
+      "working-on-it": "Input the video transcription into a summariser to receive a written summary of the meeting to share with the team.",
     },
   },
   {
     id: 9,
     text: "Do you offer flexible options (quiet zones or flexible hours) to support focused work?",
     tips: {
-      "not-yet":
-        "Walk around your office and identify two places that could be changed to a quiet zone.",
-      "working-on-it":
-        "Email the company stating that the area you identified is the quiet zone and that everyone is welcome to use that space.",
+      "not-yet": "Walk around your office and identify two places that could be changed to a quiet zone.",
+      "working-on-it": "Email the company stating that the area you identified is the quiet zone and that everyone is welcome to use that space.",
     },
   },
   {
     id: 10,
     text: "Does your team have one clear place where tasks and information live, rather than scattered across email and chat?",
     tips: {
-      "not-yet":
-        "Do an internal audit and tally where the majority of information lives. Send a company-wide email to note where information will now be stored.",
-      "working-on-it":
-        "Delegate the migration process to one central hub. Every time a new document is created, link it to its new home.",
+      "not-yet": "Do an internal audit and tally where the majority of information lives. Send a company-wide email to note where information will now be stored.",
+      "working-on-it": "Delegate the migration process to one central hub. Every time a new document is created, link it to its new home.",
     },
   },
   {
     id: 11,
     text: "Have you shared your company's adjustment/accommodation policy with your team?",
     tips: {
-      "not-yet":
-        "Look up your company's HR policy on workplace adjustments. If you can't find it in 5 minutes, neither can your team.",
-      "working-on-it":
-        "Schedule a 1-on-1 with HR to review your accommodation policy and identify one gap to address.",
+      "not-yet": "Look up your company's HR policy on workplace adjustments. If you can't find it in 5 minutes, neither can your team.",
+      "working-on-it": "Schedule a 1-on-1 with HR to review your accommodation policy and identify one gap to address.",
     },
   },
   {
     id: 12,
     text: "Do you set and review small accessibility goals regularly?",
     tips: {
-      "not-yet":
-        "Accessibility goals should be specific, measurable, attainable and timely. Use this framework to write 1 accessibility goal somewhere easily accessible.",
-      "working-on-it":
-        "At your next team meeting, share your accessibility goal out loud and ask someone to check in with you on it in two weeks.",
+      "not-yet": "Accessibility goals should be specific, measurable, attainable and timely. Use this framework to write 1 accessibility goal somewhere easily accessible.",
+      "working-on-it": "At your next team meeting, share your accessibility goal out loud and ask someone to check in with you on it in two weeks.",
     },
   },
 ];
@@ -139,6 +117,8 @@ const sampleText =
 
 export default function EmployerPortal() {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
+  const navigate = useNavigate();
   const [showEmpathyView, setShowEmpathyView] = useState(false);
   const [currentQ, setCurrentQ] = useState(0);
   const [answers, setAnswers] = useState<Answer[]>(Array(questions.length).fill(null));
@@ -192,8 +172,54 @@ export default function EmployerPortal() {
     }`;
 
   return (
-    <div className="min-h-screen bg-gray-50 p-4 md:p-8">
-      <div className="max-w-6xl mx-auto">
+    <div className="min-h-screen bg-gray-50 flex">
+      {/* Sidebar */}
+      <aside className="w-56 bg-white border-r border-gray-100 flex flex-col py-8 px-4 shrink-0">
+        <div className="mb-10 px-2">
+          <span className="text-lg font-bold tracking-tight text-gray-900">LegiAble</span>
+          <p className="text-[10px] text-gray-400 tracking-widest uppercase">by InclusiTech</p>
+        </div>
+
+        <nav className="flex flex-col gap-1 flex-1">
+          <Link
+            to="/account"
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors"
+          >
+            <LayoutDashboard className="h-4 w-4" />
+            Dashboard
+          </Link>
+          <div className="flex items-center gap-3 px-3 py-2.5 rounded-xl bg-gray-900 text-white text-sm font-medium cursor-default">
+            <Briefcase className="h-4 w-4" />
+            Employer Toolkit
+          </div>
+          {isAdmin && (
+            <Link
+              to="/admin"
+              className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors"
+            >
+              <ShieldCheck className="h-4 w-4" />
+              Admin
+            </Link>
+          )}
+        </nav>
+
+        <div className="flex flex-col gap-1 mt-4">
+          <button className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors w-full text-left">
+            <Settings className="h-4 w-4" />
+            Settings
+          </button>
+          <button
+            onClick={() => supabase.auth.signOut().then(() => navigate("/login"))}
+            className="flex items-center gap-3 px-3 py-2.5 rounded-xl text-gray-500 hover:bg-gray-50 hover:text-gray-900 text-sm font-medium transition-colors w-full text-left"
+          >
+            <LogOut className="h-4 w-4" />
+            Log out
+          </button>
+        </div>
+      </aside>
+
+      {/* Main content */}
+      <div className="flex-1 p-8 overflow-y-auto">
         <header className="mb-8">
           <h1 className="text-4xl font-bold text-gray-900 mb-2">Employer Toolkit</h1>
           <p className="text-gray-500">
@@ -337,15 +363,9 @@ export default function EmployerPortal() {
                 </p>
 
                 <div className="space-y-2">
-                  <button className={optionStyle("yes")} onClick={() => handleAnswer("yes")}>
-                    Yes
-                  </button>
-                  <button className={optionStyle("working-on-it")} onClick={() => handleAnswer("working-on-it")}>
-                    Working on it
-                  </button>
-                  <button className={optionStyle("not-yet")} onClick={() => handleAnswer("not-yet")}>
-                    Not yet
-                  </button>
+                  <button className={optionStyle("yes")} onClick={() => handleAnswer("yes")}>Yes</button>
+                  <button className={optionStyle("working-on-it")} onClick={() => handleAnswer("working-on-it")}>Working on it</button>
+                  <button className={optionStyle("not-yet")} onClick={() => handleAnswer("not-yet")}>Not yet</button>
                 </div>
 
                 <div className="flex justify-between pt-2">
